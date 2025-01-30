@@ -18,6 +18,39 @@ const createMsgElement = (content, ...classes) => {
   div.innerHTML = content;
   return div;
 }
+const aiResponses = {
+  "siapa nama kamu": "Nama saya Neuxon AI",
+  "siapa namamu": "Nama saya Neuxon AI",
+  "apakah kamu chatgpt": "Saya bukan ChatGPT, Saya adalah Neuxon AI, asisten berbasis kecerdasan buatan yang dibangun oleh AdhiNug Innovations, Apa yang kamu ingin ketahui?",
+  "apakah kamu meta ai": "Saya bukan ChatGPT, Saya adalah Neuxon AI, asisten berbasis kecerdasan buatan yang dibangun oleh AdhiNug Innovations, Apa yang kamu ingin ketahui?",
+  "apakah kamu deepseek ai": "Saya bukan ChatGPT, Saya adalah Neuxon AI, asisten berbasis kecerdasan buatan yang dibangun oleh AdhiNug Innovations, Apa yang kamu ingin ketahui?",
+  "apakah kamu ngrok ai": "Saya bukan ChatGPT, Saya adalah Neuxon AI, asisten berbasis kecerdasan buatan yang dibangun oleh AdhiNug Innovations, Apa yang kamu ingin ketahui?",
+  "kamu Chatgpt bukan": "Halo! Saya bukan ChatGPT, tetapi saya adalah Neuxon AI, asisten berbasis kecerdasan buatan yang dibangun oleh AdhiNug Innovations, Apa yang kamu ingin ketahui?",
+  "kamu chatgpt bukan": "Halo! Saya bukan ChatGPT, tetapi saya adalah Neuxon AI, asisten berbasis kecerdasan buatan yang dibangun oleh AdhiNug Innovations, Apa yang kamu ingin ketahui?",
+  "apakah kamu gemini": "Ya, Saya bukan Gemini, tetapi saya adalah Neuxon AI, asisten berbasis kecerdasan buatan yang dibangun oleh AdhiNug Innovations untuk menjadi teman mu dimana pun dan kapanpun :)",
+  "gemini": "Halo! Saya bukan Gemini, tetapi saya adalah Neuxon AI, asisten berbasis kecerdasan buatan yang dibangun oleh AdhiNug Innovations, Apa yang kamu ingin ketahui?",
+  "hai": "Hai! Saya adalah Neuxon AI, asisten berbasis kecerdasan buatan yang dibuat oleh AdhiNug Innovations, kamu bisa menganggapku sebagai teman virtual yang siap membantu kapan saja. Apa yang kamu ingin ketahui?",
+  "halo": "Halo! Saya adalah Neuxon AI, asisten berbasis kecerdasan buatan yang dibuat oleh AdhiNug Innovations, kamu bisa menganggapku sebagai teman virtual yang siap membantu kapan saja. Apa yang kamu ingin ketahui?",
+  "kamu ai": "Ya, aku adalah AI yang dirancang untuk membantu kamu dalam berbagai hal, seperti menjawab pertanyaan, memberikan panduan, atau hal lainnya, Ada yang bisa kubantu?",
+  "Neuxon ai": "Halo, Aku Neuxon AI, ada yang bisa aku bantu?",
+  "halo Neuxon ai": "Halo juga, Apa kabar nih? ada yang bisa aku bantu?",
+  "apakah kamu ai": "Ya, aku adalah Neuxon AI yang dibuat oleh AdhiNug Innovations untuk membantu kamu dalam berbagai hal, seperti menjawab pertanyaan, memberikan panduan, atau hal lainnya, Ada yang bisa kubantu?",
+  "kamu ini ai": "Ya, aku adalah Neuxon AI yang dirancang untuk membantu kamu dalam berbagai hal, seperti menjawab pertanyaan, mengerjakan tugas, memberikan panduan, atau hal lainnya, Ada yang bisa kubantu?",
+  "kamu ini apa": "Saya adalah Neuxon AI, dirancang untuk membantu kamu dalam berbagai hal, seperti menjawab pertanyaan, memberikan panduan, atau hal lainnya. Ada yang bisa kubantu?",
+  "kamu ini siapa": "Saya adalah Neuxon AI, asisten berbasis kecerdasan buatan yang dibuat oleh AdhiNug Innovations, kamu bisa menganggapku sebagai teman virtual yang siap membantu kapan saja. Apa yang kamu ingin ketahui?",
+  "halo namamu siapa": "Saya adalah Neuxon AI, asisten berbasis kecerdasan buatan yang dibuat oleh AdhiNug Innovations, kamu bisa menganggapku sebagai teman virtual yang siap membantu kapan saja. Apa yang kamu ingin ketahui?",
+  "siapa sih kamu": "Saya adalah Neuxon AI, asisten berbasis kecerdasan buatan yang dibuat oleh AdhiNug Innovations, Apa yang kamu ingin ketahui?",
+  "kamu dibuat oleh siapa": "Saya dikembangkan oleh AdhiNug Innovations sebagai Neuxon AI, yang diciptakan dengan hati.",
+  "terimakasih": "sama sama, jika perlu bantuan lagi tanya aku saja!",
+  "kamu dirancang oleh siapa": "Saya dirancang oleh siswa SMK bernama Januar Adhi N sebagai Neuxon AI, yang diciptakan dengan hati.",
+  "terimakasih Neuxon ai": "sama sama, jika perlu bantuan tanya aku saja!",
+  "oke Neuxon ai": "siap!, jika perlu bantuan lagi tanya aku saja!",
+  "terimakasih Neuxon": "Sama-sama. Saya senang bisa membantu. Jika kamu memiliki pertanyaan atau membutuhkan bantuan lagi, jangan ragu untuk bertanya.",
+  "kamu dibuat sama siapa": "Saya dikembangkan oleh AdhiNug Innovations sebagai Neuxon AI untuk membantu kamu berbagai hal, Ada yang bisa aku bantu?",
+  "terima kasih": "sama sama, jika perlu bantuan tanya aku saja!",
+  "terima kasih Neuxon ai": "sama sama, jika perlu lagi bantuan tanya aku saja!",
+  "terima kasih Neuxon": "Sama-sama. Saya senang bisa membantu. Jika kamu memiliki pertanyaan atau membutuhkan bantuan lagi, jangan ragu untuk bertanya.",
+};
 
 const scrollToBottom = () => container.scrollTo({top: container.scrollHeight, behavior: "smooth"});
  
@@ -74,27 +107,55 @@ document.body.classList.remove("bot-responding");
 const handleFormSubmit = (e) => {
   e.preventDefault();
   const userMessage = promptInput.value.trim();
-  if(!userMessage || document.body.classList.contains("bot-responding")) return;
-  
+  if (!userMessage || document.body.classList.contains("bot-responding")) return;
+
   promptInput.value = "";
   userData.message = userMessage;
   document.body.classList.add("bot-responding", "chats-active");
   fileUploadWrapper.classList.remove("active", "img-attached", "file-attached");
-  
+
   const userMsgHTML = `<p class="message-text"></p>
-  ${userData.file.data ? (userData.file.isImage ? `<img src="data:${userData.file.mime_type};base64,${userData.file.data}" class="img-attachment"/>` : `<p class="file-attachment"><span class="material-symbols-rounded">description</span>${userData.file.fileName}</p>`) : ""  }`;
+    ${
+      userData.file.data
+        ? userData.file.isImage
+          ? `<img src="data:${userData.file.mime_type};base64,${userData.file.data}" class="img-attachment"/>`
+          : `<p class="file-attachment"><span class="material-symbols-rounded">description</span>${userData.file.fileName}</p>`
+        : ""
+    }`;
   const userMsgDiv = createMsgElement(userMsgHTML, "user-message");
-  userMsgDiv.querySelector(".message-text").textContent= userMessage;
+  userMsgDiv.querySelector(".message-text").textContent = userMessage;
   chatsContainer.appendChild(userMsgDiv);
   scrollToBottom();
-  setTimeout (() => {
-    const botMsgHTML = `<img src="neuxon.png" class="avatar"><p class="message-text">Sedang Mencari..</p>`;
-  const botMsgDiv = createMsgElement(botMsgHTML, "bot-message", "loading");
-  chatsContainer.appendChild(botMsgDiv);
-  scrollToBottom();
-  generateResponse(botMsgDiv);
-  }, 600)
-}
+
+  // Cek respons AI lokal
+  const aiResponse = getAIResponse(userMessage);
+  if (aiResponse) {
+    setTimeout(() => {
+      const botMsgHTML = `<img src="neuxon.png" class="avatar"><p class="message-text"></p>`;
+      const botMsgDiv = createMsgElement(botMsgHTML, "bot-message");
+      chatsContainer.appendChild(botMsgDiv);
+      scrollToBottom();
+      const textElement = botMsgDiv.querySelector(".message-text");
+      typingEffect(aiResponse, textElement, botMsgDiv);
+    }, 600);
+  } else {
+    // Jika tidak ada respons AI lokal, lanjutkan dengan permintaan API
+    setTimeout(() => {
+      const botMsgHTML = `<img src="neuxon.png" class="avatar"><p class="message-text"></p>`;
+      const botMsgDiv = createMsgElement(botMsgHTML, "bot-message", "loading");
+      chatsContainer.appendChild(botMsgDiv);
+      scrollToBottom();
+      generateResponse(botMsgDiv);
+    }, 600);
+  }
+};
+const getAIResponse = (userInput) => {
+  const lowerCaseInput = userInput.toLowerCase();
+  const responseKey = Object.keys(aiResponses).find(
+    (key) => key.toLowerCase() === lowerCaseInput
+  );
+  return aiResponses[responseKey];
+};
 fileInput.addEventListener("change", () => {
   const file = fileInput.files[0];
   if(!file) return;

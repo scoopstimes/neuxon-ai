@@ -131,19 +131,19 @@ background: var(--secondary-hover-color);
 }
 .chats-container .message{
   display: flex;
-  gap: 11px;
+  gap: 10px;
   align-items: center;
 }
 .chats-container .message .message-text{
-  padding: 3px 16px;
+  padding: 10px 10px;
   word-wrap: break-word;
   white-space: pre-line;
 }
 .chats-container .bot-message .avatar{
-  height: 43px;
-  width: 43px;
+  height: 33px;
+  width: 33px;
   flex-shrink: 0;
-  padding: 2px;
+  padding: 1px;
   margin-right: -7px;
   align-self: flex-start;
   border-radius: 50%;
