@@ -7,6 +7,11 @@
   font-family: "Poppins", serif;
   user-select: none;
 }
+img {
+    user-drag: none; /* Mencegah drag */
+    pointer-events: none; /* Mencegah event default seperti klik */
+  }
+
 button:focus {
   outline: none !important;
   box-shadow: none !important;
