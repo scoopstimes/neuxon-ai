@@ -7,6 +7,19 @@
   font-family: "Poppins", serif;
   user-select: none;
 }
+a:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+a:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+a {
+  -webkit-tap-highlight-color: transparent; /* Menghilangkan efek highlight pada perangkat mobile */
+}
 img {
     user-drag: none; /* Mencegah drag */
     pointer-events: none; /* Mencegah event default seperti klik */
@@ -103,6 +116,12 @@ body.chats-active .container :where(.app-header, .suggestions){
   cursor: pointer;
   background: var(--secondary-color);
   transition: 0.5s ease;
+}
+.suggestions-item:focus,
+.suggestions-item:active {
+  outline: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent; /* Menghilangkan efek biru di mobile */
 }
 .suggestions .suggestions-item:hover{
 background: var(--secondary-hover-color);

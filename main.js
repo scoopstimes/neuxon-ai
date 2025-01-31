@@ -184,11 +184,11 @@ document.querySelector("#cancel-file-btn").addEventListener("click", () => {
 });
 
  document.querySelectorAll(".suggestions-item").forEach(item => {
-   item.addEventListener("click", () => {
+   item.addEventListener("click", (event) => {
+     event.preventDefault(); // Mencegah efek biru jika elemen <a>
      promptInput.value = item.querySelector(".text").textContent;
      promptForm.dispatchEvent(new Event("submit"));
-
- });
+   });
 });
 document.addEventListener("click", ({ target }) => {
    const wrapper = document.querySelector(".prompt-wrapper");
