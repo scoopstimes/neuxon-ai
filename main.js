@@ -60,60 +60,63 @@ const scrollToBottom = () => container.scrollTo({top: container.scrollHeight, be
  
 
 const typingEffect = (text, textElement, botMsgDiv) => {
-  textElement.textContent = "";
+  textElement.innerHTML = "";
   const words = text.split(" ");
   let wordIndex = 0;
-  
+
   typingInterval = setInterval(() => {
-    if(wordIndex < words.length){
-      textElement.textContent += (wordIndex === 0 ? "" : " ") + words[wordIndex++];
-      
-      
+    if (wordIndex < words.length) {
+      textElement.innerHTML += (wordIndex === 0 ? "" : " ") +
+  words[wordIndex]
+  .replace(/^\* /, "• ")
+  .replace(/(?<=\s|\b|\n)\*\*(?!\s)(.+?)(?<!\s)\*\*(?=\s|\b|\n)/g, "<b>$1</b>");
+      wordIndex++;
       scrollToBottom();
-    } else{
+    } else {
       clearInterval(typingInterval);
       botMsgDiv.classList.remove("loading");
       document.body.classList.remove("bot-responding");
     }
   }, 40);
-}
+};
 
 const generateResponse = async (botMsgDiv) => {
   const textElement = botMsgDiv.querySelector(".message-text");
   controller = new AbortController();
   chatHistory.push({
     role: "user",
-    parts: [{text: userData.message}, ...(userData.file.data ? [{inline_data: (({fileName, isImage, ...rest}) => rest)(userData.file) }] : [])]
+    parts: [{ text: userData.message }, ...(userData.file.data ? [{ inline_data: (({ fileName, isImage, ...rest }) => rest)(userData.file) }] : [])]
   });
-  
-  try{
+
+  try {
     const response = await fetch(API_URL, {
       method: "POST",
-      headers: {"Content-type": "application/json"},
-      body: JSON.stringify({contents: chatHistory}), signal: controller.signal
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify({ contents: chatHistory }),
+      signal: controller.signal
     });
     const data = await response.json();
-    if(!response.ok) throw new Error(data.error.message);
-    
+    if (!response.ok) throw new Error(data.error.message);
+
     const responseText = data.candidates[0].content.parts[0].text
-  .replace(/\*\*([^*]+)\*\*/g, "$1")  
-  .replace(/^(\s*)\*/gm, '$1•')      
+  .replace(/^(\s*)\* /gm, "$1• ") // Ubah "* " di awal baris menjadi "• "
+  .replace(/(?<=\s|\b|\n)\*\*(?!\s)(.+?)(?<!\s)\*\*(?=\s|\b|\n)/g, "<b>$1</b>") // Bold tetap berfungsi
   .trim();
 
-typingEffect(responseText, textElement, botMsgDiv);
-chatHistory.push({  
-  role: "model", 
-  parts: [{text: responseText}]
-});
-  } catch (error){
+    typingEffect(responseText, textElement, botMsgDiv);
+    chatHistory.push({
+      role: "model",
+      parts: [{ text: responseText }]
+    });
+  } catch (error) {
     textElement.style.color = "#d62939";
-textElement.textContent = error.name === "AbortError" ? "Oops! Terjadi Kesalahan, Coba lagi" : error.message;
- botMsgDiv.classList.remove("loading");
-document.body.classList.remove("bot-responding");
-  } finally{
+    textElement.textContent = error.name === "AbortError" ? "Oops! Terjadi Kesalahan, Coba lagi" : error.message;
+    botMsgDiv.classList.remove("loading");
+    document.body.classList.remove("bot-responding");
+  } finally {
     userData.file = {};
   }
-}
+};
 const handleFormSubmit = (e) => {
   e.preventDefault();
   const userMessage = promptInput.value.trim();
