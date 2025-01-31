@@ -309,7 +309,7 @@ body.bot-responding .prompt-form #stop-response-btn{
 }
 .prompt-container .disclaimer-text{
   text-align: center; 
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   padding: 16px 20px 0;
   color: var(--placeholder-color);
 }
