@@ -165,7 +165,7 @@ const handleFormSubmit = (e) => {
         <div class="bot-message" style="display: flex; gap: 5px; margin-left: 0px;">
           <img src="neuxon.png" class="avatar">
           <div class="message-content">
-            <p class="message-text">Sedang Menjawab...</p>
+            <p class="message-text">Tunggu Sebentar...</p>
             <div class="bot-controls">
               <button class="copy-btn" title="Copy"><span class="material-symbols-rounded">content_copy</span></button>
               <button class="like-btn" title="Like"><span class="material-symbols-rounded">thumb_up</span></button>
@@ -191,7 +191,7 @@ const handleFormSubmit = (e) => {
         <div class="bot-message" style="display: flex; gap: 5px; margin-left: 0px;">
           <img src="neuxon.png" class="avatar">
           <div class="message-content">
-            <p class="message-text">Sedang Menjawab...</p>
+            <p class="message-text">Tunggu Sebentar...</p>
             <div class="bot-controls">
               <button class="copy-btn" title="Copy"><span class="material-symbols-rounded">content_copy</span></button>
               <button class="like-btn" title="Like"><span class="material-symbols-rounded">thumb_up</span></button>
