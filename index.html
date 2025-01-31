@@ -32,7 +32,7 @@
 <div class="container">
   <header class="app-header">
     <h1 class="heading">Neuxon AI</h1>
-    <h2 class="sub-heading">Ada yang bisa kubantu?</h2>
+    <h2 id="animated-text"class="sub-heading"></h2>
   </header>
   
   <ul class="suggestions">
@@ -87,5 +87,42 @@
   
 </div>
   <script src="main.js"></script>
+  <script>
+      const texts = ["Halo, Selamat datang!","Ayo mulai percakapan!", "Ayo bertanya!", "Tanyakan apa saja!", "Cari tau disini!"];
+const textElement = document.getElementById("animated-text");
+
+let textIndex = 0;
+let charIndex = 0;
+let typingSpeed = 70;
+let erasingSpeed = 50;
+let delayBetweenTexts = 2000; // Delay after a full sentence
+
+function typeText() {
+  if (charIndex < texts[textIndex].length) {
+    textElement.textContent += texts[textIndex].charAt(charIndex);
+    charIndex++;
+    setTimeout(typeText, typingSpeed);
+  } else {
+    setTimeout(eraseText, delayBetweenTexts);
+  }
+}
+
+function eraseText() {
+  if (charIndex > 0) {
+    textElement.textContent = texts[textIndex].substring(0, charIndex - 1);
+    charIndex--;
+    setTimeout(eraseText, erasingSpeed);
+  } else {
+    textIndex = (textIndex + 1) % texts.length;
+    setTimeout(typeText, typingSpeed);
+  }
+}
+
+// Start the animation
+document.addEventListener("DOMContentLoaded", () => {
+  typeText();
+});
+
+    </script>
 </body>
 </html>
