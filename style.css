@@ -271,7 +271,7 @@ background: var(--secondary-hover-color);
 }
 .prompt-form #send-prompt-btn{
   color: white;
-  background: #1d7efd;
+  background: linear-gradient(to right, #1d7efd, #8f6fff);
   display: none;
 }
 .prompt-form .file-upload-wrapper :where(button, img){
