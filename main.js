@@ -77,6 +77,7 @@ const typingEffect = (text, textElement, botMsgDiv) => {
     }
   }, 40);
 }
+
 const generateResponse = async (botMsgDiv) => {
   const textElement = botMsgDiv.querySelector(".message-text");
   controller = new AbortController();
@@ -123,7 +124,7 @@ const handleFormSubmit = (e) => {
       userData.file.data
         ? userData.file.isImage
           ? `<img src="data:${userData.file.mime_type};base64,${userData.file.data}" class="img-attachment"/>`
-          : `<p class="file-attachment"><span class="material-symbols-rounded">description</span>${userData.file.fileName}</p> ` 
+          : `<p class="file-attachment"><span class="material-symbols-rounded">description</span>${userData.file.fileName}</p>`
         : ""
     }`;
   const userMsgDiv = createMsgElement(userMsgHTML, "user-message");
@@ -135,24 +136,115 @@ const handleFormSubmit = (e) => {
   const aiResponse = getAIResponse(userMessage);
   if (aiResponse) {
     setTimeout(() => {
-      const botMsgHTML = `<img src="neuxon.png" class="avatar"><p class="message-text"></p>`;
+      const botMsgHTML = `
+        <div class="bot-message" style="display: flex; gap: 5px; margin-left: 0px;">
+          <img src="neuxon.png" class="avatar">
+          <div class="message-content">
+            <p class="message-text"></p>
+            <div class="bot-controls">
+              <button class="copy-btn" title="Copy"><span class="material-symbols-rounded">content_copy</span></button>
+              <button class="like-btn" title="Like"><span class="material-symbols-rounded">thumb_up</span></button>
+              <button class="dislike-btn" title="Dislike"><span class="material-symbols-rounded">thumb_down</span></button>
+              <button class="regenerate-btn" title="Regenerate"><span class="material-symbols-rounded">refresh</span></button>
+            </div>
+          </div>
+        </div>
+      `;
       const botMsgDiv = createMsgElement(botMsgHTML, "bot-message");
       chatsContainer.appendChild(botMsgDiv);
       scrollToBottom();
       const textElement = botMsgDiv.querySelector(".message-text");
       typingEffect(aiResponse, textElement, botMsgDiv);
+
+      // Tambahkan event listener setelah elemen ditambahkan
+      addBotResponseControls(botMsgDiv);
     }, 600);
   } else {
     // Jika tidak ada respons AI lokal, lanjutkan dengan permintaan API
     setTimeout(() => {
-      const botMsgHTML = `<img src="neuxon.png" class="avatar"><p class="message-text"></p>`;
+      const botMsgHTML = `
+        <div class="bot-message" style="display: flex; gap: 5px; margin-left: 0px;">
+          <img src="neuxon.png" class="avatar">
+          <div class="message-content">
+            <p class="message-text"></p>
+            <div class="controls">
+              <button class="copy-btn" title="Copy"><span class="material-symbols-rounded">content_copy</span></button>
+              <button class="like-btn" title="Like"><span class="material-symbols-rounded">thumb_up</span></button>
+              <button class="dislike-btn" title="Dislike"><span class="material-symbols-rounded">thumb_down</span></button>
+              <button class="regenerate-btn" title="Regenerate"><span class="material-symbols-rounded">refresh</span></button>
+            </div>
+          </div>
+        </div>
+      `;
       const botMsgDiv = createMsgElement(botMsgHTML, "bot-message", "loading");
       chatsContainer.appendChild(botMsgDiv);
       scrollToBottom();
       generateResponse(botMsgDiv);
+
+      // Tambahkan event listener setelah elemen ditambahkan
+      addBotResponseControls(botMsgDiv);
     }, 600);
   }
 };
+
+// Fungsi untuk menambahkan event listeners pada kontrol bot
+const addBotResponseControls = (botMsgDiv) => {
+  const copyBtn = botMsgDiv.querySelector(".copy-btn");
+  const likeBtn = botMsgDiv.querySelector(".like-btn");
+  const dislikeBtn = botMsgDiv.querySelector(".dislike-btn");
+  const regenerateBtn = botMsgDiv.querySelector(".regenerate-btn");
+
+  if (copyBtn) {
+    copyBtn.addEventListener("click", () => copyResponse(botMsgDiv));
+  }
+
+  if (likeBtn) {
+    likeBtn.addEventListener("click", () => likeResponse(botMsgDiv));
+  }
+
+  if (dislikeBtn) {
+    dislikeBtn.addEventListener("click", () => dislikeResponse(botMsgDiv));
+  }
+
+  if (regenerateBtn) {
+    regenerateBtn.addEventListener("click", () => regenerateResponse(botMsgDiv));
+  }
+};
+
+// Fungsi untuk menyalin teks respons ke clipboard
+const copyResponse = (botMsgDiv) => {
+  const textElement = botMsgDiv.querySelector(".message-text");
+  if (textElement) {
+    navigator.clipboard.writeText(textElement.textContent)
+      .then(() => alert("Teks berhasil disalin!"))
+      .catch(err => alert("Gagal menyalin teks: " + err));
+  }
+};
+
+// Fungsi untuk menangani tombol Like
+const likeResponse = (botMsgDiv) => {
+  botMsgDiv.querySelector(".like-btn").classList.toggle("liked");
+  console.log("Pesan disukai!");
+};
+
+// Fungsi untuk menangani tombol Dislike
+const dislikeResponse = (botMsgDiv) => {
+  botMsgDiv.querySelector(".dislike-btn").classList.toggle("disliked");
+  console.log("Pesan tidak disukai!");
+};
+
+// Fungsi untuk menangani tombol Regenerate (untuk menghasilkan ulang respons)
+const regenerateResponse = (botMsgDiv) => {
+  botMsgDiv.classList.add("loading");
+  const textElement = botMsgDiv.querySelector(".message-text");
+  if (textElement) textElement.textContent = ""; // Menghapus teks sebelumnya
+  typingEffect("Tunggu sebentar...", textElement, botMsgDiv); // Menampilkan efek mengetik untuk regenerate
+  setTimeout(() => {
+    const aiResponse = getAIResponse(userData.message); // Bisa menggunakan input yang sama atau baru
+    typingEffect(aiResponse, textElement, botMsgDiv); // Menampilkan respons AI baru
+  }, 1000); // Simulasikan jeda untuk regenerate
+};
+
 const getAIResponse = (userInput) => {
   const lowerCaseInput = userInput.toLowerCase();
   const responseKey = Object.keys(aiResponses).find(

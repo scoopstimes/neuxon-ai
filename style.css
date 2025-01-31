@@ -60,6 +60,36 @@ body.light-theme{
 --scrollbar-color: #a2aac2;
 }
 
+
+.bot-controls {
+  display: flex;
+  justify-content: flex-start; /* Tombol-tombol diletakkan secara horizontal */
+  gap: 5px;
+  margin-right: auto;
+  margin-top: 10px;
+}
+
+.bot-controls button {
+  background: none;
+  border: none;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.bot-controls button:hover {
+  background: #ddd;
+}
+
+.bot-controls .material-symbols-rounded {
+  font-size: 24px;
+}
 body{
   background: var(--primary-color);
   color: var(--text-color);
