@@ -18,6 +18,7 @@ const createMsgElement = (content, ...classes) => {
   div.innerHTML = content;
   return div;
 }
+
 const aiResponses = {
   "siapa nama kamu": "Nama saya Neuxon AI",
   "siapa namamu": "Nama saya Neuxon AI",
@@ -80,6 +81,14 @@ const typingEffect = (text, textElement, botMsgDiv) => {
   }, 40);
 };
 
+const googleProductsWithoutGoogle = [
+  "Search", "Assistant", "Maps", "Drive", "Photos", "Gmail", "Chrome", "Pixel", 
+  "Play Store", "Ads", "Cloud", "Meet", "Docs", "Sheets", "Slides", "Hangouts", "meets",
+  "Calendar", "Translate", "News", "Analytics", "Duo", "Home", "Stadia", "Nest", 
+  "Fi", "One", "Classroom", "AdSense", "Photoscan", "Books", "Fonts", "Trends", 
+  "Scholar", "Groups", "Keep", "YouTube", "Android", "Chromecast", "Jamboard"
+];
+
 const generateResponse = async (botMsgDiv) => {
   const textElement = botMsgDiv.querySelector(".message-text");
   controller = new AbortController();
@@ -98,10 +107,18 @@ const generateResponse = async (botMsgDiv) => {
     const data = await response.json();
     if (!response.ok) throw new Error(data.error.message);
 
-    const responseText = data.candidates[0].content.parts[0].text
-  .replace(/^(\s*)\* /gm, "$1• ") // Ubah "* " di awal baris menjadi "• "
-  .replace(/(?<=\s|\b|\n)\*\*(?!\s)(.+?)(?<!\s)\*\*(?=\s|\b|\n)/g, "<b>$1</b>") // Bold tetap berfungsi
-  .trim();
+    let responseText = data.candidates[0].content.parts[0].text
+      .replace(/^(\s*)\* /gm, "$1• ") // Ubah "* " di awal baris menjadi "• "
+      .replace(/(?<=\s|\b|\n)\*\*(?!\s)(.+?)(?<!\s)\*\*(?=\s|\b|\n)/g, "<b>$1</b>") // Bold tetap berfungsi
+      .trim();
+
+    // Ganti "Google" dengan "AdhiKarya Innovations" kecuali untuk produk Google
+    let isGoogleProduct = googleProductsWithoutGoogle.some(product => userData.message.includes(product));
+    
+    // Jika produk Google tidak ditemukan dalam pesan, ganti "Google" dengan "AdhiKarya Innovations"
+    if (!isGoogleProduct && !responseText.includes("Gemini") && responseText.includes("Google")) {
+      responseText = responseText.replace(/Google/g, "AdhiKarya Innovations");
+    }
 
     typingEffect(responseText, textElement, botMsgDiv);
     chatHistory.push({
