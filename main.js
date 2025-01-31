@@ -167,7 +167,7 @@ const handleFormSubmit = (e) => {
           <img src="neuxon.png" class="avatar">
           <div class="message-content">
             <p class="message-text"></p>
-            <div class="controls">
+            <div class="bot-controls">
               <button class="copy-btn" title="Copy"><span class="material-symbols-rounded">content_copy</span></button>
               <button class="like-btn" title="Like"><span class="material-symbols-rounded">thumb_up</span></button>
               <button class="dislike-btn" title="Dislike"><span class="material-symbols-rounded">thumb_down</span></button>
