@@ -95,11 +95,16 @@ const generateResponse = async (botMsgDiv) => {
     const data = await response.json();
     if(!response.ok) throw new Error(data.error.message);
     
-    const responseText = data.candidates[0].content.parts[0].text.replace(/\*\*([^*]+)\*\*/g, "$1").trim();
-    typingEffect(responseText, textElement, botMsgDiv);
-    chatHistory.push({  role: "model",
-    parts: [{text: responseText}]});
-   
+    const responseText = data.candidates[0].content.parts[0].text
+  .replace(/\*\*([^*]+)\*\*/g, "$1")  
+  .replace(/^(\s*)\*/gm, '$1•')      
+  .trim();
+
+typingEffect(responseText, textElement, botMsgDiv);
+chatHistory.push({  
+  role: "model", 
+  parts: [{text: responseText}]
+});
   } catch (error){
     textElement.style.color = "#d62939";
 textElement.textContent = error.name === "AbortError" ? "Oops! Terjadi Kesalahan, Coba lagi" : error.message;
