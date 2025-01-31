@@ -23,6 +23,8 @@ const aiResponses = {
   "siapa namamu": "Nama saya Neuxon AI",
   "apakah kamu chatgpt": "Saya bukan ChatGPT, Saya adalah Neuxon AI, asisten berbasis kecerdasan buatan yang dibangun oleh AdhiNug Innovations, Apa yang kamu ingin ketahui?",
     "apakah kamu neuxon?": "Ya, Saya adalah Neuxon AI, asisten berbasis kecerdasan buatan yang dibangun oleh AdhiNug Innovations, Apa yang kamu ingin ketahui?",
+    "kamu neuxon?": "Ya, Saya adalah Neuxon AI, asisten berbasis kecerdasan buatan yang dibangun oleh AdhiNug Innovations, Apa yang kamu ingin ketahui?",
+    " kamu neuxon ai?": "Ya, Saya adalah Neuxon AI, asisten berbasis kecerdasan buatan yang dibangun oleh AdhiNug Innovations, Apa yang kamu ingin ketahui?",
     "apakah kamu neuxon ai?": "Ya, Saya adalah Neuxon AI, asisten berbasis kecerdasan buatan yang dibangun oleh AdhiNug Innovations, Apa yang kamu ingin ketahui?",
   "apakah kamu meta ai": "Saya bukan ChatGPT, Saya adalah Neuxon AI, asisten berbasis kecerdasan buatan yang dibangun oleh AdhiNug Innovations, Apa yang kamu ingin ketahui?",
   "apakah kamu deepseek ai": "Saya bukan ChatGPT, Saya adalah Neuxon AI, asisten berbasis kecerdasan buatan yang dibangun oleh AdhiNug Innovations, Apa yang kamu ingin ketahui?",
