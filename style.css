@@ -67,7 +67,7 @@ body{
   margin-top: 4vh;
 }
 .app-header .heading{
-  font-size: 2rem;
+  font-size: 2.5rem;
   width: fit-content;
   background: linear-gradient(to right, #1d7efd, #8f6fff);
   background-clip: text;
