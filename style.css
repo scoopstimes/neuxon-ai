@@ -67,7 +67,7 @@ body{
   margin-top: 4vh;
 }
 .app-header .heading{
-  font-size: 3rem;
+  font-size: 2rem;
   width: fit-content;
   background: linear-gradient(to right, #1d7efd, #8f6fff);
   background-clip: text;
@@ -75,7 +75,7 @@ body{
   -webkit-text-fill-color: transparent;
 }
 .app-header .sub-heading{
-  font-size: 2.6rem;
+  font-size: 2rem;
   margin-top: -5px;
   color: var(--subheading-color);
 }
