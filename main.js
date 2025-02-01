@@ -86,7 +86,7 @@ const googleProductsWithoutGoogle = [
   "Play Store", "Ads", "Cloud", "Meet", "Docs", "Sheets", "Slides", "Hangouts", "meets",
   "Calendar", "Translate", "News", "Analytics", "Duo", "Home", "Stadia", "Nest", 
   "Fi", "One", "Classroom", "AdSense", "Photoscan", "Books", "Fonts", "Trends", 
-  "Scholar", "Groups", "Keep", "YouTube", "Android", "Chromecast", "Jamboard"
+  "Scholar", "Groups", "Keep", "YouTube", "Android", "Chromecast", "Jamboard", "Google"
 ];
 
 const generateResponse = async (botMsgDiv) => {
@@ -147,14 +147,16 @@ const handleFormSubmit = (e) => {
   document.body.classList.add("bot-responding", "chats-active");
   fileUploadWrapper.classList.remove("active", "img-attached", "file-attached");
 
-  const userMsgHTML = `<p class="message-text"></p>
-    ${
-      userData.file.data
-        ? userData.file.isImage
-          ? `<img src="data:${userData.file.mime_type};base64,${userData.file.data}" class="img-attachment"/>`
-          : `<p class="file-attachment"><span class="material-symbols-rounded">description</span>${userData.file.fileName}</p>`
-        : ""
-    }`;
+  const userMsgHTML = `
+  ${
+    userData.file.data
+      ? userData.file.isImage
+        ? `<img src="data:${userData.file.mime_type};base64,${userData.file.data}" class="img-attachment"/>`
+        : `<p class="file-attachment"><span class="material-symbols-rounded">description</span>${userData.file.fileName}</p>`
+      : ""
+  }
+  <p class="message-text"></p>
+`;
   const userMsgDiv = createMsgElement(userMsgHTML, "user-message");
   userMsgDiv.querySelector(".message-text").textContent = userMessage;
   chatsContainer.appendChild(userMsgDiv);
