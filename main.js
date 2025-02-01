@@ -86,7 +86,7 @@ const googleProductsWithoutGoogle = [
   "Play Store", "Ads", "Cloud", "Meet", "Docs", "Sheets", "Slides", "Hangouts", "meets",
   "Calendar", "Translate", "News", "Analytics", "Duo", "Home", "Stadia", "Nest", 
   "Fi", "One", "Classroom", "AdSense", "Photoscan", "Books", "Fonts", "Trends", 
-  "Scholar", "Groups", "Keep", "YouTube", "Android", "Chromecast", "Jamboard"
+  "Scholar", "Groups", "Keep", "YouTube", "Android", "Chromecast", "Jamboard", "Google"
 ];
 
 const generateResponse = async (botMsgDiv) => {
