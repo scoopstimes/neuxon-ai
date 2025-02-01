@@ -86,7 +86,7 @@ const googleProductsWithoutGoogle = [
   "Play Store", "Ads", "Cloud", "Meet", "Docs", "Sheets", "Slides", "Hangouts", "meets",
   "Calendar", "Translate", "News", "Analytics", "Duo", "Home", "Stadia", "Nest", 
   "Fi", "One", "Classroom", "AdSense", "Photoscan", "Books", "Fonts", "Trends", 
-  "Scholar", "Groups", "Keep", "YouTube", "Android", "Chromecast", "Jamboard", "Google"
+  "Scholar", "Groups", "Keep", "YouTube", "Android", "Chromecast", "Jamboard"
 ];
 
 const generateResponse = async (botMsgDiv) => {
@@ -104,6 +104,7 @@ const generateResponse = async (botMsgDiv) => {
       body: JSON.stringify({ contents: chatHistory }),
       signal: controller.signal
     });
+
     const data = await response.json();
     if (!response.ok) throw new Error(data.error.message);
 
@@ -112,12 +113,14 @@ const generateResponse = async (botMsgDiv) => {
       .replace(/(?<=\s|\b|\n)\*\*(?!\s)(.+?)(?<!\s)\*\*(?=\s|\b|\n)/g, "<b>$1</b>") // Bold tetap berfungsi
       .trim();
 
-    // Ganti "Google" dengan "AdhiKarya Innovations" kecuali untuk produk Google
-    let isGoogleProduct = googleProductsWithoutGoogle.some(product => userData.message.includes(product));
-    
-    // Jika produk Google tidak ditemukan dalam pesan, ganti "Google" dengan "AdhiKarya Innovations"
+    // Periksa apakah respons menyebut produk Google
+    let isGoogleProduct = googleProductsWithoutGoogle.some(product => 
+      userData.message.includes(product) || responseText.includes(`Google ${product}`)
+    );
+
+    // Jika tidak menyebut produk Google, ganti "Google" dengan "AdhiKarya Innovations"
     if (!isGoogleProduct && !responseText.includes("Gemini") && responseText.includes("Google")) {
-      responseText = responseText.replace(/Google/g, "AdhiKarya Innovations");
+      responseText = responseText.replace(/\bGoogle\b(?! (Search|Assistant|Maps|Drive|Photos|Gmail|Chrome|Pixel|Play Store|Ads|Cloud|Meet|Docs|Sheets|Slides|Hangouts|meets|Calendar|Translate|News|Analytics|Duo|Home|Stadia|Nest|Fi|One|Classroom|AdSense|Photoscan|Books|Fonts|Trends|Scholar|Groups|Keep|YouTube|Android|Chromecast|Jamboard))/g, "AdhiKarya Innovations");
     }
 
     typingEffect(responseText, textElement, botMsgDiv);
