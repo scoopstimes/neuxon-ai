@@ -267,12 +267,13 @@ const dislikeResponse = (botMsgDiv) => {
 const regenerateResponse = (botMsgDiv) => {
   botMsgDiv.classList.add("loading");
   const textElement = botMsgDiv.querySelector(".message-text");
-  if (textElement) textElement.textContent = ""; // Menghapus teks sebelumnya
-  typingEffect("Tunggu sebentar...", textElement, botMsgDiv); // Menampilkan efek mengetik untuk regenerate
-  setTimeout(() => {
-    const aiResponse = getAIResponse(userData.message); // Bisa menggunakan input yang sama atau baru
-    typingEffect(aiResponse, textElement, botMsgDiv); // Menampilkan respons AI baru
-  }, 1000); // Simulasikan jeda untuk regenerate
+  textElement.textContent = "Merespon Ulang...";
+
+  // Menghapus respons lama dari chatHistory
+  chatHistory.pop();
+
+  // Mengirim ulang permintaan ke AI
+  generateResponse(botMsgDiv);
 };
 
 const getAIResponse = (userInput) => {
