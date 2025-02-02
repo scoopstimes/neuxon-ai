@@ -67,10 +67,12 @@ const typingEffect = (text, textElement, botMsgDiv) => {
 
   typingInterval = setInterval(() => {
     if (wordIndex < words.length) {
-      textElement.innerHTML += (wordIndex === 0 ? "" : " ") +
-  words[wordIndex]
-  .replace(/^\* /, "• ")
-  .replace(/(?<=\s|\b|\n)\*\*(?!\s)(.+?)(?<!\s)\*\*(?=\s|\b|\n)/g, "<b>$1</b>");
+      let word = words[wordIndex]
+        .replace(/^\* /, "• ") // Bullet point
+        .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>") // Bold
+        .replace(/\*(.+?)\*/g, "<i>$1</i>"); // Italic
+
+      textElement.innerHTML += (wordIndex === 0 ? "" : " ") + word;
       wordIndex++;
       scrollToBottom();
     } else {
@@ -82,16 +84,17 @@ const typingEffect = (text, textElement, botMsgDiv) => {
 };
 
 const googleProductsWithoutGoogle = [
-  "Search", "Assistant", "Maps", "Drive", "Photos", "Gmail", "Chrome", "Pixel", 
+  "Search", "Assistant", "Maps", "Drive", "Photos", "Gmail", "Chrome", "Pixel",
   "Play Store", "Ads", "Cloud", "Meet", "Docs", "Sheets", "Slides", "Hangouts", "meets",
-  "Calendar", "Translate", "News", "Analytics", "Duo", "Home", "Stadia", "Nest", 
-  "Fi", "One", "Classroom", "AdSense", "Photoscan", "Books", "Fonts", "Trends", 
+  "Calendar", "Translate", "News", "Analytics", "Duo", "Home", "Stadia", "Nest",
+  "Fi", "One", "Classroom", "AdSense", "Photoscan", "Books", "Fonts", "Trends",
   "Scholar", "Groups", "Keep", "YouTube", "Android", "Chromecast", "Jamboard", "Google"
 ];
 
 const generateResponse = async (botMsgDiv) => {
   const textElement = botMsgDiv.querySelector(".message-text");
   controller = new AbortController();
+
   chatHistory.push({
     role: "user",
     parts: [{ text: userData.message }, ...(userData.file.data ? [{ inline_data: (({ fileName, isImage, ...rest }) => rest)(userData.file) }] : [])]
@@ -109,14 +112,18 @@ const generateResponse = async (botMsgDiv) => {
     if (!response.ok) throw new Error(data.error.message);
 
     let responseText = data.candidates[0].content.parts[0].text
-      .replace(/^(\s*)\* /gm, "$1• ") // Ubah "* " di awal baris menjadi "• "
-      .replace(/(?<=\s|\b|\n)\*\*(?!\s)(.+?)(?<!\s)\*\*(?=\s|\b|\n)/g, "<b>$1</b>") // Bold tetap berfungsi
+      .replace(/^(\s*)\* /gm, "$1• ") // Bullet points
+      .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>") // Bold
+      .replace(/\*(.+?)\*/g, "<i>$1</i>") // Italic
       .trim();
 
     // Periksa apakah respons menyebut produk Google
-    let isGoogleProduct = googleProductsWithoutGoogle.some(product => 
+    let isGoogleProduct = googleProductsWithoutGoogle.some(product =>
       userData.message.includes(product) || responseText.includes(`Google ${product}`)
     );
+
+    // Terapkan efek mengetik
+    
 
     // Jika tidak menyebut produk Google, ganti "Google" dengan "AdhiKarya Innovations"
     if (!isGoogleProduct && !responseText.includes("Gemini") && responseText.includes("Google")) {
