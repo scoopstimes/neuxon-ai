@@ -285,20 +285,46 @@ const getAIResponse = (userInput) => {
 };
 fileInput.addEventListener("change", () => {
   const file = fileInput.files[0];
-  if(!file) return;
+  if (!file) return;
   
   const isImage = file.type.startsWith("image/");
+  const isText = file.type === "text/plain";
+  const isPdf = file.type === "application/pdf";
+  const isCsv = file.type === "text/csv";
+  const isVideo = file.type.startsWith("video/");
+  
   const reader = new FileReader();
   reader.readAsDataURL(file);
   
   reader.onload = (e) => {
     fileInput.value = "";
     const base64String = e.target.result.split(",")[1];
-    fileUploadWrapper.querySelector(".file-preview").src = e.target.result;
+    
+    // Menampilkan preview sesuai tipe file
+    if (isImage) {
+      fileUploadWrapper.querySelector(".file-preview").src = e.target.result;
+    } else if (isText) {
+      fileUploadWrapper.querySelector(".file-preview").textContent = e.target.result;
+    } else if (isPdf || isCsv) {
+      // Menampilkan pesan atau preview file PDF/CSV
+      fileUploadWrapper.querySelector(".file-preview").textContent = `File ${file.name} berhasil diupload`;
+    } else if (isVideo) {
+      const videoElement = document.createElement("video");
+      videoElement.src = e.target.result;
+      videoElement.controls = true;
+      fileUploadWrapper.querySelector(".file-preview").innerHTML = "";
+      fileUploadWrapper.querySelector(".file-preview").appendChild(videoElement);
+    }
+
     fileUploadWrapper.classList.add("active", isImage ? "img-attached" : "file-attached");
     
-    userData.file = {fileName: file.name, data: base64String, mime_type: file.type, isImage};
-  }
+    userData.file = {
+      fileName: file.name,
+      data: base64String,
+      mime_type: file.type,
+      isImage
+    };
+  };
 });
 
 document.querySelector("#cancel-file-btn").addEventListener("click", () => {
