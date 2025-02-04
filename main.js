@@ -62,8 +62,8 @@ const scrollToBottom = () => container.scrollTo({top: container.scrollHeight, be
 
 const typingEffect = (text, textElement, botMsgDiv) => {
   textElement.innerHTML = "";
-  const words = text.split(" ");
   let wordIndex = 0;
+  const words = text.split(" ");
 
   typingInterval = setInterval(() => {
     if (wordIndex < words.length) {
@@ -79,8 +79,48 @@ const typingEffect = (text, textElement, botMsgDiv) => {
       clearInterval(typingInterval);
       botMsgDiv.classList.remove("loading");
       document.body.classList.remove("bot-responding");
+
+      // **Deteksi kode dan formatnya**
+      formatCodeBlocks(textElement);
     }
   }, 40);
+};
+
+// Fungsi untuk mendeteksi dan memformat blok kode
+const formatCodeBlocks = (textElement) => {
+  const codeRegex = /```(\w+)?\n([\s\S]*?)```/g;
+
+  textElement.innerHTML = textElement.innerHTML.replace(codeRegex, (match, lang, code) => {
+    return `
+      <div class="code-container">
+        <button class="copy-code-btn" onclick="copyCode(this)">Salin</button>
+        <pre><code class="language-${lang || 'html'}">${code}</code></pre>
+      </div>
+    `;
+  });
+
+  // Pastikan elemen kode tidak dikonversi menjadi karakter entitas
+  document.querySelectorAll("pre code").forEach((block) => {
+    block.textContent = block.textContent; // Pastikan tetap sebagai teks asli
+  });
+
+  document.querySelectorAll(".copy-code-btn").forEach((btn) => {
+    btn.addEventListener("click", () => copyCode(btn));
+  });
+};
+
+// Fungsi untuk mencegah XSS dalam kode
+const escapeHTML = (str) => {
+  return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+};
+
+// Fungsi untuk menyalin kode ke clipboard
+const copyCode = (btn) => {
+  const codeElement = btn.nextElementSibling.querySelector("code");
+  navigator.clipboard.writeText(codeElement.textContent).then(() => {
+    btn.textContent = "Disalin!";
+    setTimeout(() => (btn.textContent = "Salin"), 2000);
+  }).catch(err => console.error("Gagal menyalin kode:", err));
 };
 
 const googleProductsWithoutGoogle = [
