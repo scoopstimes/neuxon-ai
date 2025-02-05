@@ -131,59 +131,132 @@ const googleProductsWithoutGoogle = [
   "Scholar", "Groups", "Keep", "YouTube", "Android", "Chromecast", "Jamboard", "Google"
 ];
 
+function cleanPrompt(text) {
+    return text
+        .replace(/[^\w\s.,!?-]/g, "")  // Hanya hapus karakter aneh, bukan semuanya
+        .split(" ")
+        .slice(0, 15)  // Boleh sampai 15 kata
+        .join(" ");
+}
 const generateResponse = async (botMsgDiv) => {
-  const textElement = botMsgDiv.querySelector(".message-text");
-  controller = new AbortController();
-
-  chatHistory.push({
-    role: "user",
-    parts: [{ text: userData.message }, ...(userData.file.data ? [{ inline_data: (({ fileName, isImage, ...rest }) => rest)(userData.file) }] : [])]
-  });
-
-  try {
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-type": "application/json" },
-      body: JSON.stringify({ contents: chatHistory }),
-      signal: controller.signal
-    });
-
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error.message);
-
-    let responseText = data.candidates[0].content.parts[0].text
-      .replace(/^(\s*)\* /gm, "$1• ") // Bullet points
-      .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>") // Bold
-      .replace(/\*(.+?)\*/g, "<i>$1</i>") // Italic
-      .trim();
-
-    // Periksa apakah respons menyebut produk Google
-    let isGoogleProduct = googleProductsWithoutGoogle.some(product =>
-      userData.message.includes(product) || responseText.includes(`Google ${product}`)
-    );
-
-    // Terapkan efek mengetik
-    
-
-    // Jika tidak menyebut produk Google, ganti "Google" dengan "AdhiKarya Innovations"
-    if (!isGoogleProduct && !responseText.includes("Gemini") && responseText.includes("Google")) {
-      responseText = responseText.replace(/\bGoogle\b(?! (Search|Assistant|Maps|Drive|Photos|Gmail|Chrome|Pixel|Play Store|Ads|Cloud|Meet|Docs|Sheets|Slides|Hangouts|meets|Calendar|Translate|News|Analytics|Duo|Home|Stadia|Nest|Fi|One|Classroom|AdSense|Photoscan|Books|Fonts|Trends|Scholar|Groups|Keep|YouTube|Android|Chromecast|Jamboard))/g, "AdhiKarya Innovations");
+    let textElement = botMsgDiv.querySelector(".message-text");
+    if (!textElement) {
+        console.error("❌ textElement tidak ditemukan!");
+        return;
     }
 
-    typingEffect(responseText, textElement, botMsgDiv);
+    controller = new AbortController();
+
     chatHistory.push({
-      role: "model",
-      parts: [{ text: responseText }]
-    });
-  } catch (error) {
-    textElement.style.color = "#d62939";
-    textElement.textContent = error.name === "AbortError" ? "Oops! Terjadi Kesalahan, Coba lagi" : error.message;
-    botMsgDiv.classList.remove("loading");
-    document.body.classList.remove("bot-responding");
-  } finally {
-    userData.file = {};
-  }
+  role: "user",
+  parts: [{ text: userData.message }, ...(userData.file.data ? [{ inline_data: (({ fileName, isImage, ...rest }) => rest)(userData.file) }] : [])]
+});
+
+    try {
+        // **🔹 Kirim permintaan ke Gemini API**
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-type": "application/json" },
+            body: JSON.stringify({ contents: chatHistory }),
+            signal: controller.signal
+        });
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error.message);
+
+        let responseText = data.candidates[0].content.parts[0].text
+            .replace(/^(\s*)\* /gm, "$1• ") // Bullet points
+            .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>") // Bold
+            .replace(/\*(.+?)\*/g, "<i>$1</i>") // Italic
+            .trim();
+
+        // **🔹 Deteksi apakah perlu membuat gambar**
+        const requiresImage = /\b(buatkan|ilustrasi|visualisasi|foto|sketsa|lukisan)\b/i.test(responseText);
+
+        if (requiresImage) {
+    // Tampilkan teks "Sedang membuat gambar..."
+    textElement.textContent = "Sedang membuat gambar...";
+
+    let cleanTextPrompt = cleanPrompt(responseText);
+    console.log("🔹 Prompt setelah dibersihkan:", cleanTextPrompt);
+
+    const imageUrl = await queryHuggingFace(cleanTextPrompt);
+
+    if (imageUrl) {
+        // Gambar berhasil dibuat
+        let imgElement = document.createElement("img");
+        imgElement.src = imageUrl;
+        imgElement.classList.add("generated-image");
+
+        // Ganti teks dengan gambar
+        textElement.replaceWith(imgElement);
+        
+    } else {
+        // Gagal membuat gambar
+        textElement.textContent = "Gagal membuat gambar.";
+    }
+} else {
+    // Tampilkan teks biasa jika tidak perlu gambar
+    typingEffect(responseText, textElement, botMsgDiv);
+}
+
+        chatHistory.push({
+            role: "model",
+            parts: [{ text: responseText }]
+        });
+
+    } catch (error) {
+        textElement.style.color = "#d62939";
+        textElement.textContent = error.name === "AbortError" ? "Oops! Terjadi Kesalahan, Coba lagi" : error.message;
+        botMsgDiv.classList.remove("loading");
+        document.body.classList.remove("bot-responding");
+    } finally {
+        userData.file = {};
+    }
 };
+
+// 🔹 Fungsi untuk request ke Hugging Face dengan retry jika model loading
+async function queryHuggingFace(prompt, retries = 5) {
+    const HF_API_URL = "https://api-inference.huggingface.co/models/ZB-Tech/Text-to-Image";
+    const HF_API_KEY = "Bearer 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"; // Ganti dengan API Key yang benar
+
+    for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+            console.log(`🔹 Mengirim permintaan ke Hugging Face (Percobaan ${attempt}):`, prompt);
+
+            const response = await fetch(HF_API_URL, {
+                method: "POST",
+                headers: {
+                    Authorization: HF_API_KEY,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ inputs: prompt }) // Pastikan format input benar
+            });
+
+            if (!response.ok) {
+                const errorResponse = await response.json();
+                if (errorResponse.error && errorResponse.error.includes("loading")) {
+                    console.warn(`⏳ Model masih loading, menunggu 30 detik... (Percobaan ${attempt}/${retries})`);
+                    await new Promise(resolve => setTimeout(resolve, 30000)); // Tunggu sebelum mencoba lagi
+                    continue;
+                }
+                console.error("❌ Error dari API Hugging Face:", errorResponse);
+                throw new Error(`Gagal menghasilkan gambar: ${errorResponse.error}`);
+            }
+
+            // Jika respons adalah gambar, ubah ke URL blob
+            const blob = await response.blob();
+            const imageUrl = URL.createObjectURL(blob);
+
+            console.log("✅ Gambar berhasil dibuat:", imageUrl);
+            return imageUrl;
+
+        } catch (error) {
+            console.error(`❌ Gagal menghubungi API Hugging Face (Percobaan ${attempt}/${retries}):`, error);
+            if (attempt === retries) return null; // Jika gagal 5x, return null
+        }
+    }
+}
 const handleFormSubmit = (e) => {
   e.preventDefault();
   const userMessage = promptInput.value.trim();
