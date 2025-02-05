@@ -65,7 +65,7 @@ body.light-theme{
   margin-left:5px;
   height: auto;     /* Menjaga rasio aspek */
   border-radius: 8px;
-  margin-top: 10px;
+  margin-top: 0px;
 }
 .bot-controls {
   display: flex;
