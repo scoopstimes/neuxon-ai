@@ -217,7 +217,7 @@ const generateResponse = async (botMsgDiv) => {
 
 // 🔹 Fungsi untuk request ke Hugging Face dengan retry jika model loading
 async function queryHuggingFace(prompt, retries = 5) {
-    const HF_API_URL = "https://api-inference.huggingface.co/models/ZB-Tech/Text-to-Image";
+    const HF_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0";
     const HF_API_KEY = "Bearer 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"; // Ganti dengan API Key yang benar
 
     for (let attempt = 1; attempt <= retries; attempt++) {
