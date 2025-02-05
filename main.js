@@ -8,7 +8,7 @@ const themeToggle = document.querySelector("#theme-toggle-btn");
 
 let typingInterval, controller;
 const API_KEY = "AIzaSyBGOI91wjcqJdWCEojPQIRxHkv-EBxOPw0"
-const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${API_KEY}`
 const userData = {message: "", file: {}};
 const chatHistory = [];
 
