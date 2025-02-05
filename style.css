@@ -60,7 +60,13 @@ body.light-theme{
 --scrollbar-color: #a2aac2;
 }
 
-
+.generated-image {
+  max-width: 90%;  /* Maksimum 100% dari lebar kontainer */
+  margin-left:5px;
+  height: auto;     /* Menjaga rasio aspek */
+  border-radius: 8px;
+  margin-top: 10px;
+}
 .bot-controls {
   display: flex;
   justify-content: flex-start; /* Tombol-tombol diletakkan secara horizontal */
