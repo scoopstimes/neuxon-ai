@@ -171,7 +171,7 @@ const generateResponse = async (botMsgDiv) => {
             .trim();
 
         // **🔹 Deteksi apakah perlu membuat gambar**
-        const requiresImage = /\b(buatkan|ilustrasi|visualisasi|foto|sketsa|lukisan)\b/i.test(responseText);
+        const requiresImage = /\b(buatkan|ilustrasi|visualisasi|sketsa|lukisan)\b/i.test(responseText);
 
         if (requiresImage) {
     // Tampilkan teks "Sedang membuat gambar..."
