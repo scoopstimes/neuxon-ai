@@ -135,7 +135,7 @@ function cleanPrompt(text) {
     return text
         .replace(/[^\w\s.,!?-]/g, "")  // Hanya hapus karakter aneh, bukan semuanya
         .split(" ")
-        .slice(0, 15)  // Boleh sampai 15 kata
+        .slice(0, 500)  // Boleh sampai 15 kata
         .join(" ");
 }
 const generateResponse = async (botMsgDiv) => {
