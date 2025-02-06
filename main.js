@@ -187,7 +187,8 @@ const generateResponse = async (botMsgDiv) => {
         let imgElement = document.createElement("img");
         imgElement.src = imageUrl;
         imgElement.classList.add("generated-image");
-
+botMsgDiv.setAttribute("data-image-url", imageUrl);
+      
         // Ganti teks dengan gambar
         textElement.replaceWith(imgElement);
         
@@ -296,6 +297,7 @@ const handleFormSubmit = (e) => {
               <button class="like-btn" title="Like"><span class="material-symbols-rounded">thumb_up</span></button>
               <button class="dislike-btn" title="Dislike"><span class="material-symbols-rounded">thumb_down</span></button>
               <button class="regenerate-btn" title="Regenerate"><span class="material-symbols-rounded">refresh</span></button>
+                            <button class="download-image-btn" title="Download"><span class="material-symbols-rounded">download</span></button>
             </div>
           </div>
         </div>
@@ -322,6 +324,7 @@ const handleFormSubmit = (e) => {
               <button class="like-btn" title="Like"><span class="material-symbols-rounded">thumb_up</span></button>
               <button class="dislike-btn" title="Dislike"><span class="material-symbols-rounded">thumb_down</span></button>
               <button class="regenerate-btn" title="Regenerate"><span class="material-symbols-rounded">refresh</span></button>
+                            <button class="download-image-btn" title="Download"><span class="material-symbols-rounded">download</span></button>
             </div>
           </div>
         </div>
@@ -336,14 +339,39 @@ const handleFormSubmit = (e) => {
     }, 600);
   }
 };
-
+function downloadImage(imageUrl) {
+    fetch(imageUrl)
+        .then(response => response.blob())
+        .then(blob => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "generated-image.png"; // Nama file default
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        })
+        .catch(error => console.error("❌ Gagal mengunduh gambar:", error));
+}
 // Fungsi untuk menambahkan event listeners pada kontrol bot
 const addBotResponseControls = (botMsgDiv) => {
   const copyBtn = botMsgDiv.querySelector(".copy-btn");
   const likeBtn = botMsgDiv.querySelector(".like-btn");
   const dislikeBtn = botMsgDiv.querySelector(".dislike-btn");
   const regenerateBtn = botMsgDiv.querySelector(".regenerate-btn");
+const downloadBtn = botMsgDiv.querySelector(".download-image-btn");
 
+if (downloadBtn) {
+  downloadBtn.addEventListener("click", () => {
+    const imageUrl = botMsgDiv.getAttribute("data-image-url");
+    if (imageUrl) {
+      downloadImage(imageUrl);
+    } else {
+      alert("Tidak ada gambar untuk diunduh.");
+    }
+  });
+}
   if (copyBtn) {
     copyBtn.addEventListener("click", () => copyResponse(botMsgDiv));
   }
