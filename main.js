@@ -340,20 +340,52 @@ const handleFormSubmit = (e) => {
   }
 };
 function downloadImage(imageUrl) {
-    fetch(imageUrl)
-        .then(response => response.blob())
-        .then(blob => {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "generated-image.png"; // Nama file default
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+    median.share.downloadImage({ url: imageUrl })
+        .then(() => {
+            // Tampilkan notifikasi setelah gambar berhasil diunduh
+            showDownloadNotification();
         })
-        .catch(error => console.error("❌ Gagal mengunduh gambar:", error));
+        .catch((error) => {
+            console.error("Gagal mengunduh gambar:", error);
+        });
 }
+
+function showDownloadNotification() {
+    if (Notification.permission === "granted") {
+        new Notification("Unduhan Selesai", {
+            body: "Gambar telah berhasil diunduh.",
+            icon: "path/to/icon.png" // Ganti dengan path ikon notifikasi Anda
+        });
+    } else if (Notification.permission !== "denied") {
+        Notification.requestPermission().then((permission) => {
+            if (permission === "granted") {
+                new Notification("Unduhan Selesai", {
+                    body: "Gambar telah berhasil diunduh.",
+                    icon: "path/to/icon.png"
+                });
+            }
+        });
+    }
+}
+
+const sendPushNotification = async (userId, message) => {
+    const response = await fetch('https://onesignal.com/api/v1/notifications', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Basic YOUR_REST_API_KEY' // Ganti dengan REST API Key Anda
+        },
+        body: JSON.stringify({
+            app_id: 'YOUR_APP_ID', // Ganti dengan App ID Anda
+            include_external_user_ids: [userId],
+            contents: { en: message }
+        })
+    });
+
+    if (!response.ok) {
+        console.error('Gagal mengirim notifikasi:', await response.json());
+    }
+};
 // Fungsi untuk menambahkan event listeners pada kontrol bot
 const addBotResponseControls = (botMsgDiv) => {
   const copyBtn = botMsgDiv.querySelector(".copy-btn");
