@@ -373,10 +373,10 @@ const sendPushNotification = async (userId, message) => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Basic YOUR_REST_API_KEY' // Ganti dengan REST API Key Anda
+            'Authorization': 'Basic os_v2_app_24kyb3oxqzhthdnqr3yv6zqdxmh3zt2opm5u5d4tvhnodbnk2qr7en4qsjzecjyx5w74tyj6rupkib5orf5jnz36aovgup5zsxlxhgy' // Ganti dengan REST API Key Anda
         },
         body: JSON.stringify({
-            app_id: 'YOUR_APP_ID', // Ganti dengan App ID Anda
+            app_id: 'd71580ed-d786-4f33-8db0-8ef15f6603bb', // Ganti dengan App ID Anda
             include_external_user_ids: [userId],
             contents: { en: message }
         })
