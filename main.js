@@ -183,19 +183,28 @@ const generateResponse = async (botMsgDiv) => {
     const imageUrl = await queryHuggingFace(cleanTextPrompt);
 
     if (imageUrl) {
-        // Gambar berhasil dibuat
-        let imgElement = document.createElement("img");
-        imgElement.src = imageUrl;
-        imgElement.classList.add("generated-image");
-botMsgDiv.setAttribute("data-image-url", imageUrl);
-      
-        // Ganti teks dengan gambar
-        textElement.replaceWith(imgElement);
-        
-    } else {
-        // Gagal membuat gambar
-        textElement.textContent = "Gagal membuat gambar.";
-    }
+  let imgElement = document.createElement("img");
+  imgElement.src = imageUrl;
+  imgElement.classList.add("generated-image");
+  botMsgDiv.setAttribute("data-image-url", imageUrl);
+
+  // Ganti teks dengan gambar
+  textElement.replaceWith(imgElement);
+
+  // **🔹 Hapus tombol "Stop Response" dan ganti dengan "Add File"**
+  const stopBtn = document.querySelector("#stop-response-btn");
+  if (stopBtn) {
+    fileUploadWrapper.classList.remove("active", "img-attached", "file-attached"); // Hapus tombol stop
+  }
+
+  // Tambahkan tombol baru untuk "Add File"
+  
+  // Tambahkan tombol baru ke dalam bot controls
+  let botControls = botMsgDiv.querySelector(".bot-controls");
+  botControls.appendChild(addFileBtn);
+} else {
+  textElement.textContent = "Gagal membuat gambar.";
+}
 } else {
     // Tampilkan teks biasa jika tidak perlu gambar
     typingEffect(responseText, textElement, botMsgDiv);
