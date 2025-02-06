@@ -6,6 +6,7 @@ const fileInput = promptForm.querySelector("#file-input");
 const fileUploadWrapper = promptForm.querySelector(".file-upload-wrapper");
 const themeToggle = document.querySelector("#theme-toggle-btn");
 
+let lastResponseWasImage = false;
 let typingInterval, controller;
 const API_KEY = "AIzaSyBGOI91wjcqJdWCEojPQIRxHkv-EBxOPw0"
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${API_KEY}`
@@ -138,6 +139,7 @@ function cleanPrompt(text) {
         .slice(0, 500)  // Boleh sampai 15 kata
         .join(" ");
 }
+
 const generateResponse = async (botMsgDiv) => {
     let textElement = botMsgDiv.querySelector(".message-text");
     if (!textElement) {
@@ -148,12 +150,12 @@ const generateResponse = async (botMsgDiv) => {
     controller = new AbortController();
 
     chatHistory.push({
-  role: "user",
-  parts: [{ text: userData.message }, ...(userData.file.data ? [{ inline_data: (({ fileName, isImage, ...rest }) => rest)(userData.file) }] : [])]
-});
+        role: "user",
+        parts: [{ text: userData.message }, ...(userData.file.data ? [{ inline_data: (({ fileName, isImage, ...rest }) => rest)(userData.file) }] : [])]
+    });
 
     try {
-        // **🔹 Kirim permintaan ke Gemini API**
+        // 🔹 Kirim permintaan ke Gemini API
         const response = await fetch(API_URL, {
             method: "POST",
             headers: { "Content-type": "application/json" },
@@ -170,45 +172,45 @@ const generateResponse = async (botMsgDiv) => {
             .replace(/\*(.+?)\*/g, "<i>$1</i>") // Italic
             .trim();
 
-        // **🔹 Deteksi apakah perlu membuat gambar**
+        // 🔹 Deteksi apakah perlu membuat gambar
         const requiresImage = /\b(buatkan|gambar|ilustrasi|visualisasi|sketsa|lukisan)\b/i.test(responseText);
 
-        if (requiresImage) {
-    // Tampilkan teks "Sedang membuat gambar..."
-    textElement.textContent = "Sedang membuat gambar...";
+        if (requiresImage && !lastResponseWasImage) { // Pastikan hanya terjadi sekali
+            lastResponseWasImage = true; // Tandai bahwa terakhir kali membuat gambar
 
-    let cleanTextPrompt = cleanPrompt(responseText);
-    console.log("🔹 Prompt setelah dibersihkan:", cleanTextPrompt);
+            // Tampilkan teks "Sedang membuat gambar..."
+            textElement.textContent = "Sedang membuat gambar...";
 
-    const imageUrl = await queryHuggingFace(cleanTextPrompt);
+            let cleanTextPrompt = cleanPrompt(responseText);
+            console.log("🔹 Prompt setelah dibersihkan:", cleanTextPrompt);
 
-    if (imageUrl) {
-  let imgElement = document.createElement("img");
-  imgElement.src = imageUrl;
-  imgElement.classList.add("generated-image");
-  botMsgDiv.setAttribute("data-image-url", imageUrl);
+            const imageUrl = await queryHuggingFace(cleanTextPrompt);
 
-  // Ganti teks dengan gambar
-  textElement.replaceWith(imgElement);
+            if (imageUrl) {
+                let imgElement = document.createElement("img");
+                imgElement.src = imageUrl;
+                imgElement.classList.add("generated-image");
+                botMsgDiv.setAttribute("data-image-url", imageUrl);
 
-  // **🔹 Hapus tombol "Stop Response" dan ganti dengan "Add File"**
-  const stopBtn = document.querySelector("#stop-response-btn");
-  if (stopBtn) {
-    fileUploadWrapper.classList.remove("active", "img-attached", "file-attached"); // Hapus tombol stop
-  }
+                // Ganti teks dengan gambar
+                textElement.replaceWith(imgElement);
 
-  // Tambahkan tombol baru untuk "Add File"
-  
-  // Tambahkan tombol baru ke dalam bot controls
-  let botControls = botMsgDiv.querySelector(".bot-controls");
-  botControls.appendChild(addFileBtn);
-} else {
-  textElement.textContent = "Gagal membuat gambar.";
-}
-} else {
-    // Tampilkan teks biasa jika tidak perlu gambar
-    typingEffect(responseText, textElement, botMsgDiv);
-}
+                // Hapus tombol "Stop Response" dan ganti dengan "Add File"
+                const stopBtn = document.querySelector("#stop-response-btn");
+                if (stopBtn) {
+                    fileUploadWrapper.classList.remove("active", "img-attached", "file-attached"); // Hapus tombol stop
+                }
+
+                // Tambahkan tombol baru ke dalam bot controls
+                let botControls = botMsgDiv.querySelector(".bot-controls");
+                botControls.appendChild(addFileBtn);
+            } else {
+                textElement.textContent = "Gagal membuat gambar.";
+            }
+        } else {
+            lastResponseWasImage = false; // Reset flag agar bisa merespons teks lagi
+            typingEffect(responseText, textElement, botMsgDiv);
+        }
 
         chatHistory.push({
             role: "model",
@@ -224,6 +226,7 @@ const generateResponse = async (botMsgDiv) => {
         userData.file = {};
     }
 };
+    
 
 // 🔹 Fungsi untuk request ke Hugging Face dengan retry jika model loading
 async function queryHuggingFace(prompt, retries = 5) {
