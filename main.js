@@ -192,7 +192,15 @@ if (requiresImage && !lastResponseWasImage) {
         imgElement.classList.add("generated-image");  
         botMsgDiv.setAttribute("data-image-url", imageUrl);  
 
-        textElement.replaceWith(imgElement); // Ganti teks dengan gambar  
+        textElement.replaceWith(imgElement); 
+      const stopBtn = document.querySelector("#stop-response-btn");
+                if (stopBtn) {
+                    fileUploadWrapper.classList.remove("active", "img-attached", "file-attached"); // Hapus tombol stop
+                }
+
+                // Tambahkan tombol baru ke dalam bot controls
+                let botControls = botMsgDiv.querySelector(".bot-controls");
+                botControls.appendChild(addFileBtn);// Ganti teks dengan gambar  
     } else {  
         textElement.textContent = "Gagal membuat gambar.";  
         textElement.classList.remove("shining-text"); // Hapus efek jika gagal  
