@@ -80,7 +80,7 @@ body.light-theme{
   margin-left:5px;
   height: auto;     /* Menjaga rasio aspek */
   border-radius: 8px;
-  margin-top: 0px;
+  margin-top: 5px;
 }
 .bot-controls {
   display: flex;
