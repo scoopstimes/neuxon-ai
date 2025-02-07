@@ -193,6 +193,9 @@ if (requiresImage && !lastResponseWasImage) {
         botMsgDiv.setAttribute("data-image-url", imageUrl);  
 
         textElement.replaceWith(imgElement); 
+      imgElement.onload = () => {
+        imgElement.style.opacity = "1";
+    };
       const stopBtn = document.querySelector("#stop-response-btn");
                 if (stopBtn) {
                     fileUploadWrapper.classList.remove("active", "img-attached", "file-attached"); // Hapus tombol stop
