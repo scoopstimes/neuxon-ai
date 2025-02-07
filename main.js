@@ -171,7 +171,17 @@ const generateResponse = async (botMsgDiv) => {
             .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>") // Bold
             .replace(/\*(.+?)\*/g, "<i>$1</i>") // Italic
             .trim();
+let isGoogleProduct = googleProductsWithoutGoogle.some(product =>
+      userData.message.includes(product) || responseText.includes(`Google ${product}`)
+    );
 
+    // Terapkan efek mengetik
+    
+
+    // Jika tidak menyebut produk Google, ganti "Google" dengan "AdhiKarya Innovations"
+    if (!isGoogleProduct && !responseText.includes("Gemini") && responseText.includes("Google")) {
+      responseText = responseText.replace(/\bGoogle\b(?! (Search|Assistant|Maps|Drive|Photos|Gmail|Chrome|Pixel|Play Store|Ads|Cloud|Meet|Docs|Sheets|Slides|Hangouts|meets|Calendar|Translate|News|Analytics|Duo|Home|Stadia|Nest|Fi|One|Classroom|AdSense|Photoscan|Books|Fonts|Trends|Scholar|Groups|Keep|YouTube|Android|Chromecast|Jamboard))/g, "AdhiKarya Innovations");
+    }
         // 🔹 Deteksi apakah perlu membuat gambar
         const requiresImage = /\b(buatkan|gambar|ilustrasi|visualisasi|sketsa|lukisan)\b/i.test(responseText);
 if (requiresImage && !lastResponseWasImage) {  
