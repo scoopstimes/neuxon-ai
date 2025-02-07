@@ -20,7 +20,10 @@ a:active {
     0% { background-position: 200%; }
     100% { background-position: -200%; }
 }
-
+.generated-image {
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+}
 .shining-text {
     background: linear-gradient(120deg, rgba(255, 255, 255, 0.4) 30%, rgba(255, 255, 255, 0.9) 50%, rgba(255, 255, 255, 0.4) 70%);
     background-size: 200% 100%;
