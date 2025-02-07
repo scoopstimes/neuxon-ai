@@ -222,29 +222,7 @@ if (requiresImage && !lastResponseWasImage) {
 // 🔹 Fungsi untuk request ke Hugging Face dengan retry jika model loading
 async function queryHuggingFace(prompt, retries = 5) {
     const HF_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0";
-    const HF_API_KEY = "Bearer hf_qiQxWcdKGFuuMCADgYqDKutXIvif (requiresImage && !lastResponseWasImage) {  
-    lastResponseWasImage = true;  
-
-    // Buat elemen teks dengan animasi mengkilap
-    textElement.textContent = "Sedang membuat gambar...";  
-    textElement.classList.add("shining-text"); // Tambahkan efek  
-
-    let cleanTextPrompt = cleanPrompt(responseText);  
-    console.log("🔹 Prompt setelah dibersihkan:", cleanTextPrompt);  
-
-    const imageUrl = await queryHuggingFace(cleanTextPrompt);  
-
-    if (imageUrl) {  
-        let imgElement = document.createElement("img");  
-        imgElement.src = imageUrl;  
-        imgElement.classList.add("generated-image");  
-        botMsgDiv.setAttribute("data-image-url", imageUrl);  
-
-        textElement.replaceWith(imgElement); // Ganti teks dengan gambar  
-    } else {  
-        textElement.textContent = "Gagal membuat gambar.";  
-        textElement.classList.remove("shining-text"); // Hapus efek jika gagal  
-    }  vpctAAUr"; // Ganti dengan API Key yang benar
+    const HF_API_KEY = "Bearer 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"; // Ganti dengan API Key yang benar
 
     for (let attempt = 1; attempt <= retries; attempt++) {
         try {
@@ -283,6 +261,7 @@ async function queryHuggingFace(prompt, retries = 5) {
         }
     }
 }
+
 const handleFormSubmit = (e) => {
   e.preventDefault();
   const userMessage = promptInput.value.trim();
