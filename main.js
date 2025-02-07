@@ -151,7 +151,10 @@ const generateResponse = async (botMsgDiv) => {
 
     chatHistory.push({
         role: "user",
-        parts: [{ text: userData.message }, ...(userData.file.data ? [{ inline_data: (({ fileName, isImage, ...rest }) => rest)(userData.file) }] : [])]
+        parts: [
+            { text: userData.message },
+            ...(userData.file.data ? [{ inline_data: (({ fileName, isImage, ...rest }) => rest)(userData.file) }] : [])
+        ]
     });
 
     try {
@@ -171,72 +174,70 @@ const generateResponse = async (botMsgDiv) => {
             .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>") // Bold
             .replace(/\*(.+?)\*/g, "<i>$1</i>") // Italic
             .trim();
-// Cek apakah ada produk Google yang disebut
-let isGoogleProduct = googleProductsWithoutGoogle.some(product =>
-    new RegExp(`\\bGoogle ${product}\\b`, "i").test(userData.message) ||
-    new RegExp(`\\bGoogle ${product}\\b`, "i").test(responseText)
-);
 
-// Jika tidak menyebut produk Google, ganti "Google" dengan "AdhiKarya Innovations"
-if (!isGoogleProduct && !responseText.includes("Gemini")) {
-    responseText = responseText.replace(
-        /\bGoogle\b(?! (Search|Assistant|Maps|Drive|Photos|Gmail|Chrome|Pixel|Play Store|Ads|Cloud|Meet|Docs|Sheets|Slides|Hangouts|meets|Calendar|Translate|News|Analytics|Duo|Home|Stadia|Nest|Fi|One|Classroom|AdSense|Photoscan|Books|Fonts|Trends|Scholar|Groups|Keep|YouTube|Android|Chromecast|Jamboard))/gi, 
-        "AdhiKarya Innovations"
-    );
+        // 🔹 Cek apakah ada produk Google yang disebut
+        let isGoogleProduct = googleProductsWithoutGoogle.some(product =>
+            new RegExp(`\\bGoogle ${product}\\b`, "i").test(userData.message) ||
+            new RegExp(`\\bGoogle ${product}\\b`, "i").test(responseText)
+        );
 
-    // Tambahan: Jika ada kalimat seperti "Saya dibuat oleh Google", ubah juga
-    responseText = responseText.replace(
-        /saya (dibuat|dikembangkan) oleh Google/gi, 
-        "Saya dikembangkan oleh AdhiKarya Innovations"
-    );
+        // 🔹 Jika tidak menyebut produk Google, ganti "Google" dengan "AdhiKarya Innovations"
+        if (!isGoogleProduct && !responseText.includes("Gemini")) {
+            responseText = responseText.replace(
+                /\bGoogle\b(?! (Search|Assistant|Maps|Drive|Photos|Gmail|Chrome|Pixel|Play Store|Ads|Cloud|Meet|Docs|Sheets|Slides|Hangouts|meets|Calendar|Translate|News|Analytics|Duo|Home|Stadia|Nest|Fi|One|Classroom|AdSense|Photoscan|Books|Fonts|Trends|Scholar|Groups|Keep|YouTube|Android|Chromecast|Jamboard))/gi,
+                "AdhiKarya Innovations"
+            );
 
-    responseText = responseText.replace(
-        /Google AI/gi, 
-        "AdhiKarya Innovations AI"
-    );
-}
-        // 🔹 Deteksi apakah perlu membuat gambar
+            responseText = responseText.replace(/saya (dibuat|dikembangkan) oleh Google/gi, "Saya dikembangkan oleh AdhiKarya Innovations");
+            responseText = responseText.replace(/Google AI/gi, "AdhiKarya Innovations AI");
+        }
+
+        // 🔹 Pastikan hanya permintaan yang benar-benar meminta gambar yang diproses
         const requiresImage = /\b(buatkan|tolong buat|tolong bikinkan|gambar(kan)?|ilustrasikan|visualisasikan|sketsakan|lukiskan)\b/i.test(userData.message);
-if (requiresImage && !lastResponseWasImage) {  
-    lastResponseWasImage = true;  
-
-    // Buat elemen teks dengan animasi mengkilap
-    textElement.textContent = "Menghasilkan gambar...";  
-    textElement.classList.add("shining-text"); // Tambahkan efek  
-
-    let cleanTextPrompt = cleanPrompt(responseText);  
-    console.log("🔹 Prompt setelah dibersihkan:", cleanTextPrompt);  
-
-    const imageUrl = await queryHuggingFace(cleanTextPrompt);  
-
-    if (imageUrl) {  
-    let imgElement = document.createElement("img");  
-    imgElement.src = imageUrl;  
-    imgElement.classList.add("generated-image");  
-    botMsgDiv.setAttribute("data-image-url", imageUrl);  
-
-    textElement.replaceWith(imgElement); 
-    imgElement.onload = () => {
-        imgElement.style.opacity = "1";
-    };
-
-    lastResponseWasImage = false; // 🔹 Reset flag setelah gambar berhasil dibuat
-
-    const stopBtn = document.querySelector("#stop-response-btn");
-    if (stopBtn) {
-        fileUploadWrapper.classList.remove("active", "img-attached", "file-attached"); // Hapus tombol stop
-    }
-
-    let botControls = botMsgDiv.querySelector(".bot-controls");
-    botControls.appendChild(addFileBtn);  
-} else {  
-    textElement.textContent = "Gagal membuat gambar.";  
-    textElement.classList.remove("shining-text");  
-    lastResponseWasImage = false; // 🔹 Pastikan di-reset meskipun gagal  
-    }
         
+        // 🔹 Jika permintaan gambar valid dan belum ada gambar terakhir yang dihasilkan
+        if (requiresImage && !lastResponseWasImage) {
+            lastResponseWasImage = true;
+
+            // Buat elemen teks dengan animasi mengkilap
+            textElement.textContent = "Menghasilkan gambar...";
+            textElement.classList.add("shining-text");
+
+            let cleanTextPrompt = cleanPrompt(responseText);
+            console.log("🔹 Prompt setelah dibersihkan:", cleanTextPrompt);
+
+            const imageUrl = await queryHuggingFace(cleanTextPrompt);
+
+            if (imageUrl) {
+                let imgElement = document.createElement("img");
+                imgElement.src = imageUrl;
+                imgElement.classList.add("generated-image");
+                botMsgDiv.setAttribute("data-image-url", imageUrl);
+
+                textElement.replaceWith(imgElement);
+                imgElement.onload = () => {
+                    imgElement.style.opacity = "1";
+                };
+
+                lastResponseWasImage = false; // 🔹 Reset flag setelah gambar berhasil dibuat
+
+                const stopBtn = document.querySelector("#stop-response-btn");
+                if (stopBtn) {
+                    fileUploadWrapper.classList.remove("active", "img-attached", "file-attached"); // Hapus tombol stop
+                }
+
+                let botControls = botMsgDiv.querySelector(".bot-controls");
+                botControls.appendChild(addFileBtn);
+
+            } else {
+                textElement.textContent = "Gagal membuat gambar.";
+                textElement.classList.remove("shining-text");
+                lastResponseWasImage = false; // 🔹 Pastikan di-reset meskipun gagal
+            }
+
         } else {
-            lastResponseWasImage = false; // Reset flag agar bisa merespons teks lagi
+            // 🔹 Jika bukan permintaan gambar, respons tetap teks
+            lastResponseWasImage = false;
             typingEffect(responseText, textElement, botMsgDiv);
         }
 
@@ -253,8 +254,7 @@ if (requiresImage && !lastResponseWasImage) {
     } finally {
         userData.file = {};
     }
-};
-    
+}; 
 
 // 🔹 Fungsi untuk request ke Hugging Face dengan retry jika model loading
 async function queryHuggingFace(prompt, retries = 5) {
