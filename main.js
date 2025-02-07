@@ -210,27 +210,30 @@ if (requiresImage && !lastResponseWasImage) {
     const imageUrl = await queryHuggingFace(cleanTextPrompt);  
 
     if (imageUrl) {  
-        let imgElement = document.createElement("img");  
-        imgElement.src = imageUrl;  
-        imgElement.classList.add("generated-image");  
-        botMsgDiv.setAttribute("data-image-url", imageUrl);  
+    let imgElement = document.createElement("img");  
+    imgElement.src = imageUrl;  
+    imgElement.classList.add("generated-image");  
+    botMsgDiv.setAttribute("data-image-url", imageUrl);  
 
-        textElement.replaceWith(imgElement); 
-      imgElement.onload = () => {
+    textElement.replaceWith(imgElement); 
+    imgElement.onload = () => {
         imgElement.style.opacity = "1";
     };
-      const stopBtn = document.querySelector("#stop-response-btn");
-                if (stopBtn) {
-                    fileUploadWrapper.classList.remove("active", "img-attached", "file-attached"); // Hapus tombol stop
-                }
 
-                // Tambahkan tombol baru ke dalam bot controls
-                let botControls = botMsgDiv.querySelector(".bot-controls");
-                botControls.appendChild(addFileBtn);// Ganti teks dengan gambar  
-    } else {  
-        textElement.textContent = "Gagal membuat gambar.";  
-        textElement.classList.remove("shining-text"); // Hapus efek jika gagal  
-    }  
+    lastResponseWasImage = false; // 🔹 Reset flag setelah gambar berhasil dibuat
+
+    const stopBtn = document.querySelector("#stop-response-btn");
+    if (stopBtn) {
+        fileUploadWrapper.classList.remove("active", "img-attached", "file-attached"); // Hapus tombol stop
+    }
+
+    let botControls = botMsgDiv.querySelector(".bot-controls");
+    botControls.appendChild(addFileBtn);  
+} else {  
+    textElement.textContent = "Gagal membuat gambar.";  
+    textElement.classList.remove("shining-text");  
+    lastResponseWasImage = false; // 🔹 Pastikan di-reset meskipun gagal  
+    }
         
         } else {
             lastResponseWasImage = false; // Reset flag agar bisa merespons teks lagi
