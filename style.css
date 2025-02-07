@@ -16,7 +16,19 @@ a:active {
   outline: none !important;
   box-shadow: none !important;
 }
+@keyframes shine {
+    0% { background-position: 200%; }
+    100% { background-position: -200%; }
+}
 
+.shining-text {
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.4) 30%, rgba(255, 255, 255, 0.9) 50%, rgba(255, 255, 255, 0.4) 70%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    color: #ACACAC63;
+    -webkit-text-fill-color: transparent;
+    animation: shine 2s infinite linear;
+}
 a {
   -webkit-tap-highlight-color: transparent; /* Menghilangkan efek highlight pada perangkat mobile */
 }
