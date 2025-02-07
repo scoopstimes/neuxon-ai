@@ -196,7 +196,7 @@ if (!isGoogleProduct && !responseText.includes("Gemini")) {
     );
 }
         // 🔹 Deteksi apakah perlu membuat gambar
-        const requiresImage = /\b(buatkan|gambar|ilustrasi|visualisasi|sketsa|lukisan)\b/i.test(responseText);
+        const requiresImage = /\b(buatkan|tolong buat|tolong bikinkan|gambar(kan)?|ilustrasikan|visualisasikan|sketsakan|lukiskan)\b/i.test(userData.message);
 if (requiresImage && !lastResponseWasImage) {  
     lastResponseWasImage = true;  
 
