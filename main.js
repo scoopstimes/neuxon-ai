@@ -174,39 +174,30 @@ const generateResponse = async (botMsgDiv) => {
 
         // 🔹 Deteksi apakah perlu membuat gambar
         const requiresImage = /\b(buatkan|gambar|ilustrasi|visualisasi|sketsa|lukisan)\b/i.test(responseText);
+if (requiresImage && !lastResponseWasImage) {  
+    lastResponseWasImage = true;  
 
-        if (requiresImage && !lastResponseWasImage) { // Pastikan hanya terjadi sekali
-            lastResponseWasImage = true; // Tandai bahwa terakhir kali membuat gambar
+    // Buat elemen teks dengan animasi mengkilap
+    textElement.textContent = "Sedang membuat gambar...";  
+    textElement.classList.add("shining-text"); // Tambahkan efek  
 
-            // Tampilkan teks "Sedang membuat gambar..."
-            textElement.textContent = "Sedang membuat gambar...";
+    let cleanTextPrompt = cleanPrompt(responseText);  
+    console.log("🔹 Prompt setelah dibersihkan:", cleanTextPrompt);  
 
-            let cleanTextPrompt = cleanPrompt(responseText);
-            console.log("🔹 Prompt setelah dibersihkan:", cleanTextPrompt);
+    const imageUrl = await queryHuggingFace(cleanTextPrompt);  
 
-            const imageUrl = await queryHuggingFace(cleanTextPrompt);
+    if (imageUrl) {  
+        let imgElement = document.createElement("img");  
+        imgElement.src = imageUrl;  
+        imgElement.classList.add("generated-image");  
+        botMsgDiv.setAttribute("data-image-url", imageUrl);  
 
-            if (imageUrl) {
-                let imgElement = document.createElement("img");
-                imgElement.src = imageUrl;
-                imgElement.classList.add("generated-image");
-                botMsgDiv.setAttribute("data-image-url", imageUrl);
-
-                // Ganti teks dengan gambar
-                textElement.replaceWith(imgElement);
-
-                // Hapus tombol "Stop Response" dan ganti dengan "Add File"
-                const stopBtn = document.querySelector("#stop-response-btn");
-                if (stopBtn) {
-                    fileUploadWrapper.classList.remove("active", "img-attached", "file-attached"); // Hapus tombol stop
-                }
-
-                // Tambahkan tombol baru ke dalam bot controls
-                let botControls = botMsgDiv.querySelector(".bot-controls");
-                botControls.appendChild(addFileBtn);
-            } else {
-                textElement.textContent = "Gagal membuat gambar.";
-            }
+        textElement.replaceWith(imgElement); // Ganti teks dengan gambar  
+    } else {  
+        textElement.textContent = "Gagal membuat gambar.";  
+        textElement.classList.remove("shining-text"); // Hapus efek jika gagal  
+    }  
+        
         } else {
             lastResponseWasImage = false; // Reset flag agar bisa merespons teks lagi
             typingEffect(responseText, textElement, botMsgDiv);
@@ -231,7 +222,29 @@ const generateResponse = async (botMsgDiv) => {
 // 🔹 Fungsi untuk request ke Hugging Face dengan retry jika model loading
 async function queryHuggingFace(prompt, retries = 5) {
     const HF_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0";
-    const HF_API_KEY = "Bearer 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"; // Ganti dengan API Key yang benar
+    const HF_API_KEY = "Bearer hf_qiQxWcdKGFuuMCADgYqDKutXIvif (requiresImage && !lastResponseWasImage) {  
+    lastResponseWasImage = true;  
+
+    // Buat elemen teks dengan animasi mengkilap
+    textElement.textContent = "Sedang membuat gambar...";  
+    textElement.classList.add("shining-text"); // Tambahkan efek  
+
+    let cleanTextPrompt = cleanPrompt(responseText);  
+    console.log("🔹 Prompt setelah dibersihkan:", cleanTextPrompt);  
+
+    const imageUrl = await queryHuggingFace(cleanTextPrompt);  
+
+    if (imageUrl) {  
+        let imgElement = document.createElement("img");  
+        imgElement.src = imageUrl;  
+        imgElement.classList.add("generated-image");  
+        botMsgDiv.setAttribute("data-image-url", imageUrl);  
+
+        textElement.replaceWith(imgElement); // Ganti teks dengan gambar  
+    } else {  
+        textElement.textContent = "Gagal membuat gambar.";  
+        textElement.classList.remove("shining-text"); // Hapus efek jika gagal  
+    }  vpctAAUr"; // Ganti dengan API Key yang benar
 
     for (let attempt = 1; attempt <= retries; attempt++) {
         try {
