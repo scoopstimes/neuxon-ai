@@ -171,14 +171,29 @@ const generateResponse = async (botMsgDiv) => {
             .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>") // Bold
             .replace(/\*(.+?)\*/g, "<i>$1</i>") // Italic
             .trim();
+// Cek apakah ada produk Google yang disebut
 let isGoogleProduct = googleProductsWithoutGoogle.some(product =>
     new RegExp(`\\bGoogle ${product}\\b`, "i").test(userData.message) ||
     new RegExp(`\\bGoogle ${product}\\b`, "i").test(responseText)
 );
 
-// Jika tidak menyebut produk Google, ubah "Google" menjadi "AdhiKarya Innovations"
+// Jika tidak menyebut produk Google, ganti "Google" dengan "AdhiKarya Innovations"
 if (!isGoogleProduct && !responseText.includes("Gemini")) {
-    responseText = responseText.replace(/\bGoogle\b(?! \w+)/g, "AdhiKarya Innovations");
+    responseText = responseText.replace(
+        /\bGoogle\b(?! (Search|Assistant|Maps|Drive|Photos|Gmail|Chrome|Pixel|Play Store|Ads|Cloud|Meet|Docs|Sheets|Slides|Hangouts|meets|Calendar|Translate|News|Analytics|Duo|Home|Stadia|Nest|Fi|One|Classroom|AdSense|Photoscan|Books|Fonts|Trends|Scholar|Groups|Keep|YouTube|Android|Chromecast|Jamboard))/gi, 
+        "AdhiKarya Innovations"
+    );
+
+    // Tambahan: Jika ada kalimat seperti "Saya dibuat oleh Google", ubah juga
+    responseText = responseText.replace(
+        /saya (dibuat|dikembangkan) oleh Google/gi, 
+        "Saya dikembangkan oleh AdhiKarya Innovations"
+    );
+
+    responseText = responseText.replace(
+        /Google AI/gi, 
+        "AdhiKarya Innovations AI"
+    );
 }
         // 🔹 Deteksi apakah perlu membuat gambar
         const requiresImage = /\b(buatkan|gambar|ilustrasi|visualisasi|sketsa|lukisan)\b/i.test(responseText);
