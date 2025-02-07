@@ -201,7 +201,7 @@ if (requiresImage && !lastResponseWasImage) {
     lastResponseWasImage = true;  
 
     // Buat elemen teks dengan animasi mengkilap
-    textElement.textContent = "Sedang membuat gambar...";  
+    textElement.textContent = "Menghasilkan gambar...";  
     textElement.classList.add("shining-text"); // Tambahkan efek  
 
     let cleanTextPrompt = cleanPrompt(responseText);  
@@ -329,7 +329,7 @@ const handleFormSubmit = (e) => {
         <div class="bot-message" style="display: flex; gap: 5px; margin-left: 0px;">
           <img src="neuxon.png" class="avatar">
           <div class="message-content">
-            <p class="message-text">Mencari...</p>
+            <p class="message-text">Tunggu Sebentar...</p>
             <div class="bot-controls">
               <button class="copy-btn" title="Copy"><span class="material-symbols-rounded">content_copy</span></button>
               <button class="like-btn" title="Like"><span class="material-symbols-rounded">thumb_up</span></button>
