@@ -404,6 +404,7 @@ background: var(--secondary-hover-color);
   left: 0;
   width: 100%;
   padding: 16px 0;
+  z-index: 3;
   background: var(--primary-color);
 }
 .prompt-container :where(.prompt-wrapper, .prompt-form, .prompt-actions){
