@@ -11,13 +11,11 @@ a:focus {
   outline: none !important;
   box-shadow: none !important;
 }
-.image-recom::hover{
-  opacity: 1;
-  transtition: 0.7s ease;
-}
-.image-recom::not(:hover){
+.image-recom{
   opacity: 0.7;
-  transtition: 0.7s ease;
+}
+.image-recom:hover{
+  opacity: 1;
 }
 
 a:active {
