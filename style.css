@@ -157,7 +157,7 @@ body{
   display: flex;
   gap: 15px;
   
-  margin-top: 9.5vh;
+  margin-top: 9vh;
   list-style: none;
   overflow-x: auto;
   scrollbar-width: none;
