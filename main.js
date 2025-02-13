@@ -264,7 +264,8 @@ const voiceOverlay = document.getElementById("voice-overlay");
 const voiceText = document.getElementById("voice-text");
 
 if ("webkitSpeechRecognition" in window) {
-    const recognition = new webkitSpeechRecognition();
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+     const recognition = new SpeechRecognition();
     recognition.continuous = false;
     recognition.interimResults = true;
     recognition.lang = "id-ID";
