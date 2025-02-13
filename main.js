@@ -267,14 +267,15 @@ const voiceText = document.getElementById("voice-text");
 if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
+    
     recognition.continuous = false;
-    recognition.interimResults = true;
+    recognition.interimResults = true; // Gunakan interim results untuk real-time teks
     recognition.lang = "id-ID";
 
-    voiceOverlay.classList.add("hidden"); // Sembunyikan overlay saat awal
+    voiceOverlay.classList.add("hidden"); // Pastikan overlay tidak muncul di awal
 
     voiceBtn.addEventListener("click", () => {
-        voiceOverlay.classList.remove("hidden"); // Tampilkan overlay saat tombol ditekan
+        voiceOverlay.classList.remove("hidden"); // Munculkan overlay setelah tombol ditekan
         voiceText.innerText = "Mendengarkan...";
         recognition.start();
     });
@@ -284,7 +285,7 @@ if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
         for (let i = 0; i < event.results.length; i++) {
             transcript += event.results[i][0].transcript + " ";
         }
-        voiceText.innerText = transcript.trim(); // Tampilkan teks sementara
+        voiceText.innerText = transcript.trim(); // Tampilkan teks yang sedang diucapkan
 
         if (event.results[0].isFinal) {
             setTimeout(() => {
@@ -305,6 +306,8 @@ if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
     };
 } else {
     console.warn("Browser tidak mendukung voice input.");
+    voiceBtn.disabled = true; // Nonaktifkan tombol jika browser tidak mendukung
+    voiceBtn.innerText = "Voice Input Tidak Didukung";
 }
 
 
