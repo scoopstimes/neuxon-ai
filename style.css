@@ -17,6 +17,53 @@ a:focus {
 .image-recom:hover{
   opacity: 1;
 }
+.voice-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+
+/* Overlay yang muncul saat mendengarkan */
+.hidden {
+  display: none !important;
+}
+#theme-toggle-btn {
+  width: 46px;
+  
+  height: 46px;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  color: var(--text-color);
+  transition: 0.5s ease;
+  background: var(--secondary-color);
+}
+#voice-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.mic-icon {
+  font-size: 50px;
+}
+
+.voice-popup {
+  text-align: center;
+}
 
 a:active {
   outline: none !important;
