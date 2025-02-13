@@ -23,7 +23,9 @@ a:focus {
   left: 50%;
   transform: translateX(-50%);
 }
-
+html {
+  font-size: 76% !important;
+}
 
 /* Overlay yang muncul saat mendengarkan */
 .hidden {
