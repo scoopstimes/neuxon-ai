@@ -172,7 +172,7 @@ method: "POST",
     console.error("❌ Fetch error:", error);
 }
         const data = await response.json();
-        
+        if (!response.ok) throw new Error(data.error.message);
 
         let responseText = data.candidates[0].content.parts[0].text
             .replace(/^(\s*)\* /gm, "$1• ") // Bullet points
