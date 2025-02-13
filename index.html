@@ -25,7 +25,7 @@
           </div>
           <div style="display: flex; margin-left: auto; gap: 10px; margin-right: 10px;">
       <button id="delete-chats-btn" class="material-symbols-rounded">add_comment</button>
-
+      <button id="theme-toggle-btn" class="material-symbols-rounded">light_mode</button>
           </div>
         </div>
       </header>
@@ -215,8 +215,14 @@
           <button id="send-prompt-btn" class="material-symbols-rounded">send</button>
         </div>
       </form>
-      <button id="theme-toggle-btn" class="material-symbols-rounded">light_mode</button>
+      <div id="voice-overlay" class="hidden">
+  <span class="material-symbols-rounded mic-icon">mic</span>
+  <p id="voice-text">Mendengarkan...</p>
+</div>
 
+<button id="voice-btn"class="material-symbols-rounded">mic
+
+</button>
 
     </div>
     <p class="disclaimer-text">Neuxon dapat membuat kesalahan, pastikan periksa kembali respon nya.</p>
