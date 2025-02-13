@@ -264,12 +264,12 @@ const voiceBtn = document.getElementById("voice-btn");
 const voiceOverlay = document.getElementById("voice-overlay");
 const voiceText = document.getElementById("voice-text");
 
+let recognition;
+
 if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    
+    recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.continuous = false;
-    recognition.interimResults = true; // Gunakan interim results untuk real-time teks
+    recognition.interimResults = true;
     recognition.lang = "id-ID";
 
     voiceOverlay.classList.add("hidden"); // Pastikan overlay tidak muncul di awal
@@ -306,10 +306,7 @@ if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
     };
 } else {
     console.warn("Browser tidak mendukung voice input.");
-    voiceBtn.disabled = true; // Nonaktifkan tombol jika browser tidak mendukung
-    voiceBtn.innerText = "Voice Input Tidak Didukung";
 }
-
 
 // 🔹 Fungsi untuk request ke Hugging Face dengan retry jika model loading
 async function queryHuggingFace(prompt, retries = 5) {
