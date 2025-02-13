@@ -6,6 +6,7 @@
   box-sizing: border-box;
   font-family: "Poppins", serif;
   user-select: none;
+  font-size: 73% !important;
 }
 a:focus {
   outline: none !important;
@@ -23,9 +24,7 @@ a:focus {
   left: 50%;
   transform: translateX(-50%);
 }
-html {
-  font-size: 75% !important;
-}
+
 
 /* Overlay yang muncul saat mendengarkan */
 .hidden {
