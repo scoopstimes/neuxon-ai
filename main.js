@@ -239,14 +239,17 @@ method: "POST",
             lastResponseWasImage = false;
             typingEffect(responseText, textElement, botMsgDiv);
         }
-
+const speakText = (text) => {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "id-ID"; // Bahasa Indonesia
+    utterance.rate = 1.0; // Kecepatan bicara normal
+    speechSynthesis.speak(utterance);
+};
         chatHistory.push({
             role: "model",
             parts: [{ text: responseText }]
         });
-if (!requiresImage) {
-            speakText(responseText);
-}
+
     } catch (error) {
         textElement.style.color = "#d62939";
         textElement.textContent = error.name === "AbortError" ? "Oops! Terjadi Kesalahan, Coba lagi" : error.message;
@@ -256,12 +259,7 @@ if (!requiresImage) {
         userData.file = {};
     }
 }; 
-const speakText = (text) => {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "id-ID"; // Bahasa Indonesia
-    utterance.rate = 1.0; // Kecepatan bicara normal
-    speechSynthesis.speak(utterance);
-};
+
 
 const voiceBtn = document.getElementById("voice-btn");
 const voiceOverlay = document.getElementById("voice-overlay");
