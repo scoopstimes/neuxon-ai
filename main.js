@@ -259,54 +259,66 @@ const speakText = (text) => {
         userData.file = {};
     }
 }; 
-
-
 const voiceBtn = document.getElementById("voice-btn");
 const voiceOverlay = document.getElementById("voice-overlay");
 const voiceText = document.getElementById("voice-text");
 
 if ("webkitSpeechRecognition" in window) {
-const recognition = new webkitSpeechRecognition();
-recognition.continuous = false;
-recognition.interimResults = true; // Gunakan interim results untuk real-time teks
-recognition.lang = "id-ID";
+    const recognition = new webkitSpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = "id-ID";
 
-voiceOverlay.classList.add("hidden"); // Pastikan overlay tidak muncul di awal
+    voiceOverlay.classList.add("hidden");
 
-voiceBtn.addEventListener("click", () => {
-voiceOverlay.classList.remove("hidden"); // Munculkan overlay setelah tombol ditekan
-voiceText.innerText = "Mendengarkan...";
-recognition.start();
-});
+    voiceBtn.addEventListener("click", () => {
+        console.log("Tombol voice diklik");
+        voiceOverlay.classList.remove("hidden");
+        voiceText.innerText = "Mendengarkan...";
+        recognition.start();
+    });
 
-recognition.onresult = (event) => {
-let transcript = "";
-for (let i = 0; i < event.results.length; i++) {
-transcript += event.results[i][0].transcript + " ";
-}
-voiceText.innerText = transcript.trim(); // Tampilkan teks yang sedang diucapkan
+    recognition.onstart = () => {
+        console.log("Speech recognition dimulai");
+    };
 
-if (event.results[0].isFinal) {  
-  setTimeout(() => {  
-    promptInput.value = transcript.trim();  
-    handleFormSubmit(new Event("submit"));  
-    voiceOverlay.classList.add("hidden"); // Sembunyikan overlay setelah selesai  
-  }, 1000);  
-}
+    recognition.onresult = (event) => {
+        console.log("Hasil suara diterima", event);
+        let transcript = "";
+        for (let i = 0; i < event.results.length; i++) {
+            transcript += event.results[i][0].transcript + " ";
+        }
+        voiceText.innerText = transcript.trim();
 
-};
+        if (event.results[0].isFinal) {
+            console.log("Final transcript:", transcript.trim());
+            setTimeout(() => {
+                promptInput.value = transcript.trim();
+                handleFormSubmit(new Event("submit"));
+                voiceOverlay.classList.add("hidden");
+            }, 1000);
+        }
+    };
 
-recognition.onend = () => {
-voiceOverlay.classList.add("hidden"); // Sembunyikan overlay setelah berhenti mendengarkan
-};
+    recognition.onspeechend = () => {
+        console.log("Speech recognition selesai");
+        recognition.stop();
+    };
 
-recognition.onerror = (event) => {
-console.error("Speech recognition error:", event.error);
-voiceOverlay.classList.add("hidden");
-};
+    recognition.onend = () => {
+        console.log("Speech recognition berakhir");
+        voiceOverlay.classList.add("hidden");
+    };
+
+    recognition.onerror = (event) => {
+        console.error("Speech recognition error:", event.error);
+        voiceOverlay.classList.add("hidden");
+    };
 } else {
-console.warn("Browser tidak mendukung voice input.");
-}
+    console.warn("Browser tidak mendukung voice input.");
+          }
+
+
 
 // 🔹 Fungsi untuk request ke Hugging Face dengan retry jika model loading
 async function queryHuggingFace(prompt, retries = 5) {
