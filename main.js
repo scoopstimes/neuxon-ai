@@ -164,13 +164,7 @@ method: "POST",
             headers: { "Content-type": "application/json" },
             body: JSON.stringify({ contents: chatHistory }),
             signal: controller.signal
-      
     });
-    console.log("🔹 Response status:", response.status);
-    if (!response.ok) throw new Error(`HTTP ${response.status} - ${data.error?.message || "Unknown error"}`);
-} catch (error) {
-    console.error("❌ Fetch error:", error);
-}
         const data = await response.json();
         if (!response.ok) throw new Error(data.error.message);
 
