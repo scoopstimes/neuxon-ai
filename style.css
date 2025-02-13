@@ -6,6 +6,9 @@
   box-sizing: border-box;
   font-family: "Poppins", serif;
   user-select: none;
+  
+}
+html{
   font-size: 73% !important;
 }
 a:focus {
