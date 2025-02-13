@@ -8,9 +8,7 @@
   user-select: none;
   
 }
-html{
-  font-size: 73% !important;
-}
+
 a:focus {
   outline: none !important;
   box-shadow: none !important;
@@ -578,9 +576,7 @@ body.bot-responding .prompt-form #stop-response-btn{
 
 padding: 20px 0 100px;
 }
-html{
-  font-size: 73% !important;
-}
+
 .app-header:is(.heading, sub-heading){
 font-size: 0.5rem;
 
