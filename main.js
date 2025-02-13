@@ -260,56 +260,68 @@ const speakText = (text) => {
     }
 }; 
 const voiceBtn = document.getElementById("voice-btn");
-     const voiceOverlay = document.getElementById("voice-overlay");
-     const voiceText = document.getElementById("voice-text");
+const voiceOverlay = document.getElementById("voice-overlay");
+const voiceText = document.getElementById("voice-text");
 
-     if ("webkitSpeechRecognition" in window) {
-         const recognition = new webkitSpeechRecognition();
-         recognition.continuous = false;
-         recognition.interimResults = true; // Gunakan interim results untuk real-time teks
-         recognition.lang = "id-ID";
+// Fungsi untuk memeriksa izin mikrofon
+async function checkMicrophonePermission() {
+    try {
+        const response = await median.permissions.status(['microphone']);
+        return response.microphone === 'granted';
+    } catch (error) {
+        console.error("Error checking microphone permission:", error);
+        return false;
+    }
+}
 
-         voiceOverlay.classList.add("hidden"); // Pastikan overlay tidak muncul di awal
+if ("webkitSpeechRecognition" in window) {
+    const recognition = new webkitSpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true; // Gunakan interim results untuk real-time teks
+    recognition.lang = "id-ID";
 
-         voiceBtn.addEventListener("click", async () => {
-             const permissionStatus = await median.permissions.status(['microphone']);
-             if (permissionStatus.microphone === 'granted') {
-                 voiceOverlay.classList.remove("hidden"); // Munculkan overlay setelah tombol ditekan
-                 voiceText.innerText = "Mendengarkan...";
-                 recognition.start();
-             } else {
-                 console.warn("Izin mikrofon belum diberikan.");
-             }
-         });
+    voiceOverlay.classList.add("hidden"); // Pastikan overlay tidak muncul di awal
 
-         recognition.onresult = (event) => {
-             let transcript = "";
-             for (let i = 0; i < event.results.length; i++) {
-                 transcript += event.results[i][0].transcript + " ";
-             }
-             voiceText.innerText = transcript.trim(); // Tampilkan teks yang sedang diucapkan
+    voiceBtn.addEventListener("click", async () => {
+        const hasPermission = await checkMicrophonePermission();
 
-             if (event.results[0].isFinal) {
-                 setTimeout(() => {
-                     promptInput.value = transcript.trim();
-                     handleFormSubmit(new Event("submit"));
-                     voiceOverlay.classList.add("hidden"); // Sembunyikan overlay setelah selesai
-                 }, 1000);
-             }
-         };
+        if (hasPermission) {
+            voiceOverlay.classList.remove("hidden"); // Munculkan overlay setelah tombol ditekan
+            voiceText.innerText = "Mendengarkan...";
+            recognition.start();
+        } else {
+            console.warn("Izin mikrofon belum diberikan.");
+            alert("Harap berikan izin mikrofon untuk menggunakan fitur ini.");
+        }
+    });
 
-         recognition.onend = () => {
-             voiceOverlay.classList.add("hidden"); // Sembunyikan overlay setelah berhenti mendengarkan
-         };
+    recognition.onresult = (event) => {
+        let transcript = "";
+        for (let i = 0; i < event.results.length; i++) {
+            transcript += event.results[i][0].transcript + " ";
+        }
+        voiceText.innerText = transcript.trim(); // Tampilkan teks yang sedang diucapkan
 
-         recognition.onerror = (event) => {
-             console.error("Speech recognition error:", event.error);
-             voiceOverlay.classList.add("hidden");
-         };
-     } else {
-         console.warn("Browser tidak mendukung voice input.");
-     }
+        if (event.results[0].isFinal) {
+            setTimeout(() => {
+                promptInput.value = transcript.trim();
+                handleFormSubmit(new Event("submit"));
+                voiceOverlay.classList.add("hidden"); // Sembunyikan overlay setelah selesai
+            }, 1000);
+        }
+    };
 
+    recognition.onend = () => {
+        voiceOverlay.classList.add("hidden"); // Sembunyikan overlay setelah berhenti mendengarkan
+    };
+
+    recognition.onerror = (event) => {
+        console.error("Speech recognition error:", event.error);
+        voiceOverlay.classList.add("hidden");
+    };
+} else {
+    console.warn("Browser tidak mendukung voice input.");
+      }
 // 🔹 Fungsi untuk request ke Hugging Face dengan retry jika model loading
 async function queryHuggingFace(prompt, retries = 5) {
     const HF_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0";
