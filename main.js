@@ -263,7 +263,6 @@ const speakText = (text) => {
 const voiceBtn = document.getElementById("voice-btn");
 const voiceOverlay = document.getElementById("voice-overlay");
 const voiceText = document.getElementById("voice-text");
-const promptInput = document.getElementById("prompt-input"); // Tambahkan ini
 
 if ("webkitSpeechRecognition" in window) {
   const recognition = new webkitSpeechRecognition();
