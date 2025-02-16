@@ -57,7 +57,15 @@ const aiResponses = {
   "terima kasih Neuxon ai": "sama sama, jika perlu lagi bantuan tanya aku saja!",
   "terima kasih Neuxon": "Sama-sama. Saya senang bisa membantu. Jika kamu memiliki pertanyaan atau membutuhkan bantuan lagi, jangan ragu untuk bertanya.",
 };
+const liveStreamContainer = document.getElementById("live-stream-container");
+const liveVideo = document.getElementById("live-video");
+const startStreamBtn = document.getElementById("start-stream-btn");
+const stopStreamBtn = document.getElementById("stop-stream-btn");
+const sendStreamBtn = document.getElementById("send-stream-btn");
 
+let stream;
+let mediaRecorder;
+let recordedChunks = [];
 const scrollToBottom = () => container.scrollTo({top: container.scrollHeight, behavior: "smooth"});
  
 
@@ -460,7 +468,84 @@ function showDownloadNotification() {
         });
     }
 }
+startStreamBtn.addEventListener("click", async () => {
+  try {
+    // Mengakses webcam dan mikrofon
+    stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    liveVideo.srcObject = stream;
+    liveVideo.play();
+    liveStreamContainer.style.display = "block";
 
+    // Inisialisasi MediaRecorder untuk merekam video + audio
+    mediaRecorder = new MediaRecorder(stream, { mimeType: "video/webm; codecs=vp8,opus" });
+
+    recordedChunks = [];
+
+    mediaRecorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        recordedChunks.push(event.data);
+      }
+    };
+
+    mediaRecorder.onstop = async () => {
+      // Gabungkan semua potongan rekaman menjadi satu Blob
+      const recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
+
+      // Konversi Blob ke base64
+      const reader = new FileReader();
+      reader.readAsDataURL(recordedBlob);
+      reader.onloadend = () => {
+        const base64Video = reader.result.split(",")[1];
+
+        // Set data video untuk dikirim ke Gemini AI
+        userData.file = {
+          fileName: "live-stream-video.webm",
+          data: base64Video,
+          mime_type: "video/webm",
+          isImage: false
+        };
+
+        // Hentikan stream dan sembunyikan container
+        stream.getTracks().forEach(track => track.stop());
+        liveVideo.srcObject = null;
+        liveStreamContainer.style.display = "none";
+
+        // Kirim ke Gemini AI dengan fungsi submit
+        promptInput.value = "Ini merupakan hasil rekaman live stream dengan audio.";
+        handleFormSubmit(new Event("submit"));
+      };
+    };
+
+    // Mulai merekam
+    mediaRecorder.start();
+  } catch (error) {
+    console.error("Error mengakses webcam atau mikrofon:", error);
+    alert("Gagal mengakses webcam/mikrofon. Pastikan perangkat Anda mendukung dan sudah memberikan izin.");
+  }
+});
+
+// Stop live stream: hentikan semua track video & audio, lalu hentikan rekaman
+stopStreamBtn.addEventListener("click", () => {
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+    liveVideo.srcObject = null;
+    liveStreamContainer.style.display = "none";
+  }
+
+  if (mediaRecorder && mediaRecorder.state !== "inactive") {
+    mediaRecorder.stop();
+  }
+});
+
+// Kirim rekaman video ke Gemini AI
+sendStreamBtn.addEventListener("click", () => {
+  if (!mediaRecorder || mediaRecorder.state === "inactive") {
+    alert("Stream belum direkam!");
+    return;
+  }
+
+  mediaRecorder.stop(); // Hentikan rekaman, lalu `onstop` akan otomatis mengirim video
+});
 const sendPushNotification = async (userId, message) => {
     const response = await fetch('https://onesignal.com/api/v1/notifications', {
         method: 'POST',
