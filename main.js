@@ -273,6 +273,9 @@ const voiceOverlay = document.getElementById("voice-overlay");
 const voiceText = document.getElementById("voice-text");
 
 let recognition;
+let mediaRecorder;
+let audioChunks = [];
+let stream;
 
 if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
     recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
@@ -282,10 +285,56 @@ if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
 
     voiceOverlay.classList.add("hidden"); // Pastikan overlay tidak muncul di awal
 
-    voiceBtn.addEventListener("click", () => {
-        voiceOverlay.classList.remove("hidden"); // Munculkan overlay setelah tombol ditekan
-        voiceText.innerText = "Mendengarkan...";
-        recognition.start();
+    voiceBtn.addEventListener("click", async () => {
+        try {
+            // Mulai rekam audio
+            stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+
+            voiceOverlay.classList.remove("hidden"); // Munculkan overlay setelah tombol ditekan
+            voiceText.innerText = "Mendengarkan...";
+            recognition.start();
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    audioChunks.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = async () => {
+                // Gabungkan semua potongan rekaman menjadi satu Blob
+                const recordedBlob = new Blob(audioChunks, { type: "audio/webm" });
+
+                // Konversi Blob ke base64
+                const reader = new FileReader();
+                reader.readAsDataURL(recordedBlob);
+                reader.onloadend = () => {
+                    const base64Audio = reader.result.split(",")[1];
+
+                    // Set data audio untuk dikirim ke Gemini AI
+                    userData.file = {
+                        fileName: "voice-recording.webm",
+                        data: base64Audio,
+                        mime_type: "audio/webm",
+                        isImage: false
+                    };
+
+                    // Hentikan stream dan sembunyikan overlay
+                    stream.getTracks().forEach(track => track.stop());
+                    voiceOverlay.classList.add("hidden");
+
+                    // Kirim ke Gemini AI dengan fungsi submit
+                    promptInput.value = "Ini merupakan hasil rekaman suara.";
+                    handleFormSubmit(new Event("submit"));
+                };
+            };
+
+            mediaRecorder.start();
+        } catch (error) {
+            console.error("Error mengakses mikrofon:", error);
+            alert("Gagal mengakses mikrofon. Pastikan perangkat Anda mendukung dan sudah memberikan izin.");
+        }
     });
 
     recognition.onresult = (event) => {
@@ -305,7 +354,9 @@ if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
     };
 
     recognition.onend = () => {
-        voiceOverlay.classList.add("hidden"); // Sembunyikan overlay setelah berhenti mendengarkan
+        if (mediaRecorder && mediaRecorder.state !== "inactive") {
+            mediaRecorder.stop(); // Hentikan rekaman audio setelah speech recognition selesai
+        }
     };
 
     recognition.onerror = (event) => {
@@ -315,7 +366,6 @@ if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
 } else {
     console.warn("Browser tidak mendukung voice input.");
 }
-
 // 🔹 Fungsi untuk request ke Hugging Face dengan retry jika model loading
 async function queryHuggingFace(prompt, retries = 5) {
     const HF_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0";
