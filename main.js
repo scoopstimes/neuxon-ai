@@ -268,104 +268,7 @@ const speakText = (text) => {
     }
 }; 
 
-const voiceBtn = document.getElementById("voice-btn");
-const voiceOverlay = document.getElementById("voice-overlay");
-const voiceText = document.getElementById("voice-text");
 
-let recognition;
-let mediaRecorder;
-let audioChunks = [];
-let stream;
-
-if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
-    recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    recognition.continuous = false;
-    recognition.interimResults = true;
-    recognition.lang = "id-ID";
-
-    voiceOverlay.classList.add("hidden"); // Pastikan overlay tidak muncul di awal
-
-    voiceBtn.addEventListener("click", async () => {
-        try {
-            // Mulai rekam audio
-            stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
-
-            voiceOverlay.classList.remove("hidden"); // Munculkan overlay setelah tombol ditekan
-            voiceText.innerText = "Mendengarkan...";
-            recognition.start();
-            audioChunks = [];
-
-            mediaRecorder.ondataavailable = (event) => {
-                if (event.data.size > 0) {
-                    audioChunks.push(event.data);
-                }
-            };
-
-            mediaRecorder.onstop = async () => {
-                // Gabungkan semua potongan rekaman menjadi satu Blob
-                const recordedBlob = new Blob(audioChunks, { type: "audio/webm" });
-
-                // Konversi Blob ke base64
-                const reader = new FileReader();
-                reader.readAsDataURL(recordedBlob);
-                reader.onloadend = () => {
-                    const base64Audio = reader.result.split(",")[1];
-
-                    // Set data audio untuk dikirim ke Gemini AI
-                    userData.file = {
-                        fileName: "voice-recording.webm",
-                        data: base64Audio,
-                        mime_type: "audio/webm",
-                        isImage: false
-                    };
-
-                    // Hentikan stream dan sembunyikan overlay
-                    stream.getTracks().forEach(track => track.stop());
-                    voiceOverlay.classList.add("hidden");
-
-                    // Kirim ke Gemini AI dengan fungsi submit
-                    promptInput.value = "Ini merupakan hasil rekaman suara.";
-                    handleFormSubmit(new Event("submit"));
-                };
-            };
-
-            mediaRecorder.start();
-        } catch (error) {
-            console.error("Error mengakses mikrofon:", error);
-            alert("Gagal mengakses mikrofon. Pastikan perangkat Anda mendukung dan sudah memberikan izin.");
-        }
-    });
-
-    recognition.onresult = (event) => {
-        let transcript = "";
-        for (let i = 0; i < event.results.length; i++) {
-            transcript += event.results[i][0].transcript + " ";
-        }
-        voiceText.innerText = transcript.trim(); // Tampilkan teks yang sedang diucapkan
-
-        if (event.results[0].isFinal) {
-            setTimeout(() => {
-                promptInput.value = transcript.trim();
-                handleFormSubmit(new Event("submit"));
-                voiceOverlay.classList.add("hidden"); // Sembunyikan overlay setelah selesai
-            }, 1000);
-        }
-    };
-
-    recognition.onend = () => {
-        if (mediaRecorder && mediaRecorder.state !== "inactive") {
-            mediaRecorder.stop(); // Hentikan rekaman audio setelah speech recognition selesai
-        }
-    };
-
-    recognition.onerror = (event) => {
-        console.error("Speech recognition error:", event.error);
-        voiceOverlay.classList.add("hidden");
-    };
-} else {
-    console.warn("Browser tidak mendukung voice input.");
-}
 // 🔹 Fungsi untuk request ke Hugging Face dengan retry jika model loading
 async function queryHuggingFace(prompt, retries = 5) {
     const HF_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0";
@@ -408,7 +311,53 @@ async function queryHuggingFace(prompt, retries = 5) {
         }
     }
 }
+const voiceBtn = document.getElementById("voice-btn");
+const voiceOverlay = document.getElementById("voice-overlay");
+const voiceText = document.getElementById("voice-text");
 
+let recognition;
+
+if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
+    recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = "id-ID";
+
+    voiceOverlay.classList.add("hidden"); // Pastikan overlay tidak muncul di awal
+
+    voiceBtn.addEventListener("click", () => {
+        voiceOverlay.classList.remove("hidden"); // Munculkan overlay setelah tombol ditekan
+        voiceText.innerText = "Mendengarkan...";
+        recognition.start();
+    });
+
+    recognition.onresult = (event) => {
+        let transcript = "";
+        for (let i = 0; i < event.results.length; i++) {
+            transcript += event.results[i][0].transcript + " ";
+        }
+        voiceText.innerText = transcript.trim(); // Tampilkan teks yang sedang diucapkan
+
+        if (event.results[0].isFinal) {
+            setTimeout(() => {
+                promptInput.value = transcript.trim();
+                handleFormSubmit(new Event("submit"));
+                voiceOverlay.classList.add("hidden"); // Sembunyikan overlay setelah selesai
+            }, 1000);
+        }
+    };
+
+    recognition.onend = () => {
+        voiceOverlay.classList.add("hidden"); // Sembunyikan overlay setelah berhenti mendengarkan
+    };
+
+    recognition.onerror = (event) => {
+        console.error("Speech recognition error:", event.error);
+        voiceOverlay.classList.add("hidden");
+    };
+} else {
+    console.warn("Browser tidak mendukung voice input.");
+}
 const handleFormSubmit = (e) => {
   e.preventDefault();
   const userMessage = promptInput.value.trim();
