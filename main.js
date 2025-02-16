@@ -267,50 +267,6 @@ const speakText = (text) => {
         userData.file = {};
     }
 }; 
-
-
-// 🔹 Fungsi untuk request ke Hugging Face dengan retry jika model loading
-async function queryHuggingFace(prompt, retries = 5) {
-    const HF_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0";
-    const HF_API_KEY = "Bearer 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"; // Ganti dengan API Key yang benar
-
-    for (let attempt = 1; attempt <= retries; attempt++) {
-        try {
-            console.log(`🔹 Mengirim permintaan ke Hugging Face (Percobaan ${attempt}):`, prompt);
-
-            const response = await fetch(HF_API_URL, {
-                method: "POST",
-                headers: {
-                    Authorization: HF_API_KEY,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ inputs: prompt }) // Pastikan format input benar
-            });
-
-            if (!response.ok) {
-                const errorResponse = await response.json();
-                if (errorResponse.error && errorResponse.error.includes("loading")) {
-                    console.warn(`⏳ Model masih loading, menunggu 30 detik... (Percobaan ${attempt}/${retries})`);
-                    await new Promise(resolve => setTimeout(resolve, 30000)); // Tunggu sebelum mencoba lagi
-                    continue;
-                }
-                console.error("❌ Error dari API Hugging Face:", errorResponse);
-                throw new Error(`Gagal menghasilkan gambar: ${errorResponse.error}`);
-            }
-
-            // Jika respons adalah gambar, ubah ke URL blob
-            const blob = await response.blob();
-            const imageUrl = URL.createObjectURL(blob);
-
-            console.log("✅ Gambar berhasil dibuat:", imageUrl);
-            return imageUrl;
-
-        } catch (error) {
-            console.error(`❌ Gagal menghubungi API Hugging Face (Percobaan ${attempt}/${retries}):`, error);
-            if (attempt === retries) return null; // Jika gagal 5x, return null
-        }
-    }
-}
 const voiceBtn = document.getElementById("voice-btn");
 const voiceOverlay = document.getElementById("voice-overlay");
 const voiceText = document.getElementById("voice-text");
@@ -358,6 +314,50 @@ if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
 } else {
     console.warn("Browser tidak mendukung voice input.");
 }
+
+// 🔹 Fungsi untuk request ke Hugging Face dengan retry jika model loading
+async function queryHuggingFace(prompt, retries = 5) {
+    const HF_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0";
+    const HF_API_KEY = "Bearer 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"; // Ganti dengan API Key yang benar
+
+    for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+            console.log(`🔹 Mengirim permintaan ke Hugging Face (Percobaan ${attempt}):`, prompt);
+
+            const response = await fetch(HF_API_URL, {
+                method: "POST",
+                headers: {
+                    Authorization: HF_API_KEY,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ inputs: prompt }) // Pastikan format input benar
+            });
+
+            if (!response.ok) {
+                const errorResponse = await response.json();
+                if (errorResponse.error && errorResponse.error.includes("loading")) {
+                    console.warn(`⏳ Model masih loading, menunggu 30 detik... (Percobaan ${attempt}/${retries})`);
+                    await new Promise(resolve => setTimeout(resolve, 30000)); // Tunggu sebelum mencoba lagi
+                    continue;
+                }
+                console.error("❌ Error dari API Hugging Face:", errorResponse);
+                throw new Error(`Gagal menghasilkan gambar: ${errorResponse.error}`);
+            }
+
+            // Jika respons adalah gambar, ubah ke URL blob
+            const blob = await response.blob();
+            const imageUrl = URL.createObjectURL(blob);
+
+            console.log("✅ Gambar berhasil dibuat:", imageUrl);
+            return imageUrl;
+
+        } catch (error) {
+            console.error(`❌ Gagal menghubungi API Hugging Face (Percobaan ${attempt}/${retries}):`, error);
+            if (attempt === retries) return null; // Jika gagal 5x, return null
+        }
+    }
+}
+
 const handleFormSubmit = (e) => {
   e.preventDefault();
   const userMessage = promptInput.value.trim();
