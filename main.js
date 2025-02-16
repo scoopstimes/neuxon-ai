@@ -64,6 +64,7 @@ const stopStreamBtn = document.getElementById("stop-stream-btn");
 const sendStreamBtn = document.getElementById("send-stream-btn");
 
 let stream;
+let isRecording = false;
 let mediaRecorder;
 let recordedChunks = [];
 const scrollToBottom = () => container.scrollTo({top: container.scrollHeight, behavior: "smooth"});
@@ -467,6 +468,8 @@ function showDownloadNotification() {
         });
     }
 }
+
+
 startStreamBtn.addEventListener("click", async () => {
   try {
     // Mengakses webcam dan mikrofon
@@ -479,6 +482,7 @@ startStreamBtn.addEventListener("click", async () => {
     mediaRecorder = new MediaRecorder(stream, { mimeType: "video/webm; codecs=vp8,opus" });
 
     recordedChunks = [];
+    isRecording = true; // Set rekaman aktif
 
     mediaRecorder.ondataavailable = (event) => {
       if (event.data.size > 0) {
@@ -487,6 +491,8 @@ startStreamBtn.addEventListener("click", async () => {
     };
 
     mediaRecorder.onstop = async () => {
+      if (!isRecording) return; // Jika tidak direkam, jangan kirim
+
       // Gabungkan semua potongan rekaman menjadi satu Blob
       const recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
 
@@ -505,8 +511,10 @@ startStreamBtn.addEventListener("click", async () => {
         };
 
         // Hentikan stream dan sembunyikan container
-        stream.getTracks().forEach(track => track.stop());
-        liveVideo.srcObject = null;
+        if (stream) {
+          stream.getTracks().forEach(track => track.stop());
+          liveVideo.srcObject = null;
+        }
         liveStreamContainer.style.display = "none";
 
         // Kirim ke Gemini AI dengan fungsi submit
@@ -516,6 +524,7 @@ startStreamBtn.addEventListener("click", async () => {
     };
 
     // Mulai merekam
+    recordedChunks = [];
     mediaRecorder.start();
   } catch (error) {
     console.error("Error mengakses webcam atau mikrofon:", error);
@@ -523,7 +532,7 @@ startStreamBtn.addEventListener("click", async () => {
   }
 });
 
-// Stop live stream: hentikan semua track video & audio, lalu hentikan rekaman
+// Stop live stream: Hanya hentikan video, jangan kirim rekaman
 stopStreamBtn.addEventListener("click", () => {
   if (stream) {
     stream.getTracks().forEach(track => track.stop());
@@ -531,9 +540,7 @@ stopStreamBtn.addEventListener("click", () => {
     liveStreamContainer.style.display = "none";
   }
 
-  if (mediaRecorder && mediaRecorder.state !== "inactive") {
-    mediaRecorder.stop();
-  }
+  isRecording = false; // Matikan flag rekaman, agar video tidak dikirim otomatis
 });
 
 // Kirim rekaman video ke Gemini AI
@@ -543,8 +550,10 @@ sendStreamBtn.addEventListener("click", () => {
     return;
   }
 
+  isRecording = true; // Pastikan rekaman akan dikirim
   mediaRecorder.stop(); // Hentikan rekaman, lalu `onstop` akan otomatis mengirim video
 });
+
 const sendPushNotification = async (userId, message) => {
     const response = await fetch('https://onesignal.com/api/v1/notifications', {
         method: 'POST',
