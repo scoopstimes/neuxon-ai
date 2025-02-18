@@ -8,7 +8,9 @@
   user-select: none;
   
 }
-
+#liveVideo {
+  transform: scaleX(-1);
+}
 a:focus {
   outline: none !important;
   box-shadow: none !important;
