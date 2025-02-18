@@ -92,8 +92,30 @@ const typingEffect = (text, textElement, botMsgDiv) => {
 
       // **Deteksi kode dan formatnya**
       formatCodeBlocks(textElement);
+      formatTables(textElement); // Tambahkan fungsi format tabel di sini
     }
   }, 40);
+};
+
+const formatTables = (textElement) => {
+  const tableRegex = /\n(\|.+?\|)\n(\|[-:]+?\|)\n((\|.+?\|\n?)+)/g;
+
+  textElement.innerHTML = textElement.innerHTML.replace(tableRegex, (match, headers, separator, rows) => {
+    let headerCells = headers.split("|").filter(cell => cell.trim()).map(cell => `<th>${cell.trim()}</th>`).join("");
+    let rowCells = rows.split("\n").filter(row => row.trim()).map(row => {
+      let cells = row.split("|").filter(cell => cell.trim()).map(cell => `<td>${cell.trim()}</td>`).join("");
+      return `<tr>${cells}</tr>`;
+    }).join("");
+
+    return `
+      <div class="table-container">
+        <table class="bot-table">
+          <thead><tr>${headerCells}</tr></thead>
+          <tbody>${rowCells}</tbody>
+        </table>
+      </div>
+    `;
+  });
 };
 
 // Fungsi untuk mendeteksi dan memformat blok kode
