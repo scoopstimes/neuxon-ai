@@ -98,11 +98,11 @@ const typingEffect = (text, textElement, botMsgDiv) => {
 };
 
 const formatTables = (textElement) => {
-  const tableRegex = /\n\|(.+?)\|\n\|[-:| ]+\|\n((\|.+?\|\n?)+)/g;
+  const tableRegex = /\n\|(.+?)\|\n\|[-:| ]+\|\n((?:\|.+?\|\n?)+)/g;
 
   textElement.innerHTML = textElement.innerHTML.replace(tableRegex, (match, headers, rows) => {
     let headerCells = headers.split("|").map(cell => `<th>${cell.trim()}</th>`).join("");
-    let rowCells = rows.split("\n").map(row => {
+    let rowCells = rows.trim().split("\n").map(row => {
       let cells = row.split("|").map(cell => `<td>${cell.trim()}</td>`).join("");
       return `<tr>${cells}</tr>`;
     }).join("");
