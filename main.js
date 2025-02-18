@@ -97,10 +97,22 @@ const typingEffect = (text, textElement, botMsgDiv) => {
   }, 40);
 };
 
-const formatTables = (textElement) => {
-  const tableRegex = /\n\|(.+?)\|\n\|[-:| ]+\|\n((?:\|.+?\|\n?)+)/g;
+function convertBrToNewline(html) {
+  return html
+    .replace(/<br\s*\/?>/gi, "\n")   // ubah <br> jadi \n
+    .replace(/&nbsp;/g, " ");       // ubah &nbsp; jadi spasi biasa
+}
 
-  textElement.innerHTML = textElement.innerHTML.replace(tableRegex, (match, headers, rows) => {
+const formatTables = (textElement) => {
+  // Ambil innerHTML
+  let html = textElement.innerHTML;
+
+  // Konversi <br> => \n, &nbsp; => ' '
+  html = convertBrToNewline(html);
+
+  // Sekarang jalankan regex di variabel html
+  const tableRegex = /\n\|(.+?)\|\n\|[-:| ]+\|\n((?:\|.+?\|\n?)+)/g;
+  let replaced = html.replace(tableRegex, (match, headers, rows) => {
     let headerCells = headers.split("|").map(cell => `<th>${cell.trim()}</th>`).join("");
     let rowCells = rows.trim().split("\n").map(row => {
       let cells = row.split("|").map(cell => `<td>${cell.trim()}</td>`).join("");
@@ -116,6 +128,9 @@ const formatTables = (textElement) => {
       </div>
     `;
   });
+
+  // Update kembali textElement
+  textElement.innerHTML = replaced;
 };
 // Fungsi untuk mendeteksi dan memformat blok kode
 const formatCodeBlocks = (textElement) => {
