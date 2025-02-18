@@ -44,6 +44,32 @@ a:focus {
   transition: 0.5s ease;
   background: var(--secondary-color);
 }
+.table-container {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.bot-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.bot-table th,
+.bot-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.bot-table th {
+  background-color: #007bff;
+  color: white;
+}
+
+.bot-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
 #voice-overlay {
   position: fixed;
   top: 0;
