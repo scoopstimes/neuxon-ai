@@ -98,12 +98,11 @@ const typingEffect = (text, textElement, botMsgDiv) => {
 };
 
 const formatTables = (textElement) => {
-  const tableRegex = /\n(\|.+?\|)\n(\|[-:]+?\|)\n((\|.+?\|\n?)+)/g;
-
-  textElement.innerHTML = textElement.innerHTML.replace(tableRegex, (match, headers, separator, rows) => {
-    let headerCells = headers.split("|").filter(cell => cell.trim()).map(cell => `<th>${cell.trim()}</th>`).join("");
-    let rowCells = rows.split("\n").filter(row => row.trim()).map(row => {
-      let cells = row.split("|").filter(cell => cell.trim()).map(cell => `<td>${cell.trim()}</td>`).join("");
+  let text = textElement.textContent; // Ambil teks asli tanpa HTML
+  textElement.innerHTML = text.replace(tableRegex, (match, headers, separator, rows) => {
+    let headerCells = headers.trim().split("|").map(cell => `<th>${cell.trim()}</th>`).join("");
+    let rowCells = rows.trim().split("\n").map(row => {
+      let cells = row.split("|").map(cell => `<td>${cell.trim()}</td>`).join("");
       return `<tr>${cells}</tr>`;
     }).join("");
 
