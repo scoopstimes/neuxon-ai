@@ -99,9 +99,9 @@ const typingEffect = (text, textElement, botMsgDiv) => {
 
 const formatTables = (textElement) => {
   let text = textElement.textContent; // Ambil teks asli tanpa HTML
-  textElement.innerHTML = text.replace(tableRegex, (match, headers, separator, rows) => {
-    let headerCells = headers.trim().split("|").map(cell => `<th>${cell.trim()}</th>`).join("");
-    let rowCells = rows.trim().split("\n").map(row => {
+  textElement.innerHTML = text.replace(tableRegex, (match, headers, rows) => {
+    let headerCells = headers.split("|").map(cell => `<th>${cell.trim()}</th>`).join("");
+    let rowCells = rows.split("\n").map(row => {
       let cells = row.split("|").map(cell => `<td>${cell.trim()}</td>`).join("");
       return `<tr>${cells}</tr>`;
     }).join("");
