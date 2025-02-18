@@ -48,27 +48,53 @@ a:focus {
   overflow-x: auto;
   max-width: 100%;
   margin-top: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .bot-table {
   width: 100%;
   border-collapse: collapse;
+  font-family: Arial, sans-serif;
 }
 
 .bot-table th,
 .bot-table td {
   border: 1px solid #ddd;
-  padding: 8px;
+  padding: 12px;
   text-align: left;
 }
 
 .bot-table th {
   background-color: #007bff;
   color: white;
+  font-weight: bold;
 }
 
 .bot-table tr:nth-child(even) {
-  background-color: #f2f2f2;
+  background-color: #f9f9f9;
+}
+
+.bot-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.bot-table td {
+  color: #333;
+}
+
+.bot-table th:first-child,
+.bot-table td:first-child {
+  border-left: none;
+}
+
+.bot-table th:last-child,
+.bot-table td:last-child {
+  border-right: none;
+}
+
+.bot-table tr:last-child td {
+  border-bottom: none;
 }
 #voice-overlay {
   position: fixed;
