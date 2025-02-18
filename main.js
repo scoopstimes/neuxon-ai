@@ -98,8 +98,9 @@ const typingEffect = (text, textElement, botMsgDiv) => {
 };
 
 const formatTables = (textElement) => {
-  let text = textElement.textContent; // Ambil teks asli tanpa HTML
-  textElement.innerHTML = text.replace(tableRegex, (match, headers, rows) => {
+  const tableRegex = /\n\|(.+?)\|\n\|[-:| ]+\|\n((\|.+?\|\n?)+)/g;
+
+  textElement.innerHTML = textElement.innerHTML.replace(tableRegex, (match, headers, rows) => {
     let headerCells = headers.split("|").map(cell => `<th>${cell.trim()}</th>`).join("");
     let rowCells = rows.split("\n").map(row => {
       let cells = row.split("|").map(cell => `<td>${cell.trim()}</td>`).join("");
@@ -116,7 +117,6 @@ const formatTables = (textElement) => {
     `;
   });
 };
-
 // Fungsi untuk mendeteksi dan memformat blok kode
 const formatCodeBlocks = (textElement) => {
   const codeRegex = /```(\w+)?\n([\s\S]*?)```/g;
