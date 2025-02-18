@@ -102,15 +102,10 @@ function convertBrToNewline(html) {
     .replace(/<br\s*\/?>/gi, "\n")   // ubah <br> jadi \n
     .replace(/&nbsp;/g, " ");       // ubah &nbsp; jadi spasi biasa
 }
-
 const formatTables = (textElement) => {
-  // Ambil innerHTML
   let html = textElement.innerHTML;
-
-  // Konversi <br> => \n, &nbsp; => ' '
   html = convertBrToNewline(html);
 
-  // Sekarang jalankan regex di variabel html
   const tableRegex = /\n\|(.+?)\|\n\|[-:| ]+\|\n((?:\|.+?\|\n?)+)/g;
   let replaced = html.replace(tableRegex, (match, headers, rows) => {
     let headerCells = headers.split("|").map(cell => `<th>${cell.trim()}</th>`).join("");
@@ -129,9 +124,9 @@ const formatTables = (textElement) => {
     `;
   });
 
-  // Update kembali textElement
   textElement.innerHTML = replaced;
 };
+
 // Fungsi untuk mendeteksi dan memformat blok kode
 const formatCodeBlocks = (textElement) => {
   const codeRegex = /```(\w+)?\n([\s\S]*?)```/g;
